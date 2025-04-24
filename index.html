@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Doggy Desserts – Monthly Competition</title>
+  <title>Doggy Desserts - Monthly Competition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
@@ -12,41 +12,47 @@
       --secondary: #ab5896;
       --accent: #c0d969;
       --light: #f9f9f9;
-      --dark: #333333;
+      --dark: #333;
     }
-    body { font-family: 'Nunito', sans-serif; background: var(--light); }
-    .dog-card { transition: .3s ease; border:2px solid #f1f1f1; overflow:hidden; }
-    .dog-card:hover { transform: translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,.1); }
-    .heart-btn { transition:.2s ease; }
-    .heart-btn:hover:not(.voted){ transform:scale(1.1); }
-    .heart-btn.voted { color:var(--secondary); animation:heartBeat .3s ease-in-out; }
-    @keyframes heartBeat {
-      0%,50%,100%{transform:scale(1);} 25%{transform:scale(1.3);} 75%{transform:scale(1.2);}
+    body {
+      font-family: 'Nunito',sans-serif;
+      background-color: var(--light);
     }
-    .heart-animation { position:absolute; pointer-events:none; animation:floatUp 1s ease-out forwards; }
-    @keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(.5);} 100%{opacity:0;transform:translateY(-50px) scale(1.5);} }
-    .vote-count.bump{ animation:bump .3s ease; }
-    @keyframes bump {0%{transform:scale(1);}50%{transform:scale(1.2);}100%{transform:scale(1);}}
+    .dog-card { transition: all .3s ease; overflow: hidden; border: 2px solid #f1f1f1; }
+    .dog-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,.1); }
+    .heart-btn { transition: all .2s ease; }
+    .heart-btn:hover:not(.voted) { transform: scale(1.1); }
+    .heart-btn.voted { color: var(--secondary); animation: heartBeat .3s ease-in-out; }
+    @keyframes heartBeat { 0%{transform:scale(1)}25%{transform:scale(1.3)}50%{transform:scale(1)}75%{transform:scale(1.2)}100%{transform:scale(1)} }
+    .heart-animation { position:absolute; pointer-events:none; animation: floatUp 1s ease-out forwards; opacity:0; }
+    @keyframes floatUp { 0%{transform:translateY(0) scale(.5);opacity:1}100%{transform:translateY(-50px) scale(1.5);opacity:0} }
+    .vote-count { transition: all .3s ease; }
+    .vote-count.bump { animation: bump .3s ease; }
+    @keyframes bump { 0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)} }
     .paw-print { position:absolute; opacity:.05; z-index:0; }
-    .admin-panel{display:none;background:white;border:2px solid var(--primary);border-radius:8px;padding:20px;margin-bottom:30px;box-shadow:0 5px 15px rgba(0,0,0,.1);position:relative;}
-    .admin-toggle{position:fixed;bottom:20px;right:20px;z-index:100;background:var(--primary);color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.2);}
-    .dog-entry{display:flex;align-items:center;padding:10px;border-bottom:1px solid #eee;}
-    .dog-entry:last-child{border-bottom:none;}
-    .login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;}
-    .login-panel{background:white;padding:30px;border-radius:8px;width:90%;max-width:400px;box-shadow:0 5px 20px rgba(0,0,0,.2);}
-    .logout-btn,.share-btn{transition:.2s ease;}
-    .logout-btn{position:absolute;top:20px;right:20px;background:#f3f4f6;color:#4b5563;border:1px solid #e5e7eb;border-radius:4px;padding:6px 12px;cursor:pointer;}
-    .logout-btn:hover{background:#e5e7eb;}
-    .share-btn{display:flex;align-items:center;padding:5px 10px;background:#f3f4f6;border-radius:4px;color:#4b5563;font-size:14px;cursor:pointer;}
-    .share-btn:hover{background:#e5e7eb;}
-    .share-btn svg{margin-right:5px;}
-    .tooltip{position:absolute;background:rgba(0,0,0,.8);color:#fff;padding:5px 10px;border-radius:4px;font-size:12px;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;z-index:10;}
-    .tooltip.show{opacity:1;}
+    .admin-panel { display:none; background:#fff; border:2px solid var(--primary); border-radius:8px; padding:20px; margin-bottom:30px; box-shadow:0 5px 15px rgba(0,0,0,.1); position:relative; }
+    .admin-toggle { position:fixed; bottom:20px; right:20px; z-index:100; background:var(--primary); color:#fff; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,.2); }
+    .dog-entry { display:flex; align-items:center; padding:10px; border-bottom:1px solid #eee; }
+    .dog-entry:last-child { border-bottom:none; }
+    .login-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:1000; }
+    .login-panel { background:#fff; padding:30px; border-radius:8px; width:90%; max-width:400px; box-shadow:0 5px 20px rgba(0,0,0,.2); }
+    .logout-btn, .share-btn { transition: all .2s ease; }
+    .logout-btn { position:absolute; top:20px; right:20px; background:#f3f4f6; color:#4b5563; border:1px solid #e5e7eb; border-radius:4px; padding:6px 12px; font-size:14px; cursor:pointer; }
+    .logout-btn:hover { background:#e5e7eb; }
+    .share-btn { display:flex; align-items:center; padding:5px 10px; background:#f3f4f6; border-radius:4px; color:#4b5563; font-size:14px; cursor:pointer; }
+    .share-btn:hover { background:#e5e7eb; }
+    .share-btn svg { margin-right:5px; }
+    .tooltip { position:absolute; background:rgba(0,0,0,.8); color:#fff; padding:5px 10px; border-radius:4px; font-size:12px; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap; z-index:10; }
+    .tooltip.show { opacity:1; }
   </style>
+
+  <!-- your Apps Script endpoint -->
+  <script>
+    const VOTE_URL = 'https://script.google.com/macros/s/AKfycbwHrvAKb4o9GSIP84yBqd2q1MxDBJT0cT5Sf7SV5tIl1VempJqs6BjCjg5zb_DC3PG7aA/exec';
+  </script>
 </head>
 <body>
   <div class="container mx-auto px-4 py-8 relative overflow-hidden">
-    <!-- paw prints -->
     <div class="paw-print text-6xl top-10 left-10">🐾</div>
     <div class="paw-print text-8xl bottom-20 right-10">🐾</div>
     <div class="paw-print text-5xl top-40 right-40">🐾</div>
@@ -55,47 +61,20 @@
     <div class="text-center mb-8 relative z-10">
       <h1 class="text-4xl md:text-5xl font-bold text-[#54b8b2] mb-2">Doggy Desserts</h1>
       <h2 class="text-2xl md:text-3xl font-semibold text-[#ab5896] mb-4">Monthly Dog Photo Competition</h2>
-      <p class="text-lg text-gray-700 max-w-2xl mx-auto">Vote for your favorite dog! Each person can vote once per dog.</p>
+      <p class="text-lg text-gray-700 max-w-2xl mx-auto">
+        Vote for your favorite doggy! Each person can vote once per dog.
+      </p>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="admin-panel" class="admin-panel relative z-10">
-      <h3 class="text-2xl font-bold text-[#54b8b2] mb-4">Admin Panel</h3>
-      <button id="logout-btn" class="logout-btn">Logout</button>
-      <div class="mb-6">
-        <h4 class="text-lg font-semibold mb-2">Add New Dog</h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Dog Name</label>
-            <input id="new-dog-name" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#54b8b2]" placeholder="Enter dog name"/>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-            <input id="new-dog-image" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#54b8b2]" placeholder="Paste image URL"/>
-          </div>
-          <div class="flex items-end">
-            <button id="add-dog-btn" class="bg-[#54b8b2] text-white px-4 py-2 rounded-md hover:bg-[#48a19b]">Add Dog</button>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h4 class="text-lg font-semibold mb-2">Manage Dogs</h4>
-        <div id="dog-entries-list" class="max-h-60 overflow-y-auto border rounded-md"></div>
-      </div>
-      <div class="mt-6 flex justify-between">
-        <button id="save-data-btn" class="bg-[#54b8b2] text-white px-4 py-2 rounded-md hover:bg-[#48a19b]">Save Changes</button>
-        <button id="reset-votes-btn" class="bg-[#ab5896] text-white px-4 py-2 rounded-md hover:bg-[#964c84]">Reset All Votes</button>
-      </div>
-    </div>
+    <!-- admin panel here if you still need it -->
 
-    <!-- Sort & count -->
     <div class="flex justify-between items-center mb-6 relative z-10">
       <div class="text-lg font-semibold text-[#ab5896]">
-        <span id="total-entries">0</span> Entries
+        <span id="total-entries">0</span> Adorable Doggy's
       </div>
       <div class="flex items-center">
         <label for="sort-select" class="mr-2 text-gray-700">Sort by:</label>
-        <select id="sort-select" class="border rounded-md px-3 py-1 focus:ring-2 focus:ring-[#54b8b2]">
+        <select id="sort-select" class="bg-white border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#54b8b2]">
           <option value="name">Name (A-Z)</option>
           <option value="votes">Most Votes</option>
           <option value="newest">Newest First</option>
@@ -103,207 +82,100 @@
       </div>
     </div>
 
-    <!-- Gallery -->
     <div id="dog-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10"></div>
   </div>
 
-  <button id="admin-toggle" class="admin-toggle" style="display:none">⚙️</button>
-  <div id="login-overlay" class="login-overlay" style="display:none">
-    <div class="login-panel">
-      <h3 class="text-2xl font-bold text-[#54b8b2] mb-4">Admin Login</h3>
-      <input id="admin-password" type="password" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#54b8b2]" placeholder="Password"/>
-      <div class="flex justify-end mt-4">
-        <button id="login-btn" class="bg-[#54b8b2] text-white px-4 py-2 rounded-md hover:bg-[#48a19b] mr-2">Login</button>
-        <button id="cancel-login-btn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Cancel</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const ADMIN_PASSWORD = "788220Lee!";
-
-    function checkAdminAccess() {
-      const isAdmin = localStorage.getItem('isAdmin') === 'true';
-      document.getElementById('admin-toggle').style.display = isAdmin ? 'flex' : 'none';
+    // helpers
+    function updateTotalEntries() {
+      document.getElementById('total-entries').textContent = (window.liveDogData||[]).length;
     }
-    function handleAdminLogout() {
-      localStorage.removeItem('isAdmin');
-      document.getElementById('admin-panel').style.display = 'none';
-      checkAdminAccess();
-      alert('Logged out');
-    }
-    function showLoginOverlay() {
-      document.getElementById('login-overlay').style.display = 'flex';
-    }
-    function hideLoginOverlay() {
-      document.getElementById('login-overlay').style.display = 'none';
-    }
-    function handleAdminLogin() {
-      if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
-        localStorage.setItem('isAdmin','true');
-        hideLoginOverlay();
-        checkAdminAccess();
-      } else alert('Wrong password');
-    }
-
-    function saveDogData(data){ localStorage.setItem('dogData', JSON.stringify(data)); }
-    function getDogData(){ return JSON.parse(localStorage.getItem('dogData')||'[]'); }
-    function hasVoted(id){ const v=JSON.parse(localStorage.getItem('dogVotes')||'{}'); return v[id]; }
-    function recordVote(id){ const v=JSON.parse(localStorage.getItem('dogVotes')||'{}'); v[id]=true; localStorage.setItem('dogVotes',JSON.stringify(v)); }
-
-    function createHeartAnimation(x,y){
+    function floatHeart(x,y) {
       const h=document.createElement('div');
-      h.innerText='❤️'; h.className='heart-animation text-2xl';
-      h.style.left=`${x}px`; h.style.top=`${y}px`; document.body.append(h);
+      h.innerHTML='❤️'; h.className='heart-animation text-2xl';
+      h.style.left=`${x}px`; h.style.top=`${y}px`;
+      document.body.appendChild(h);
       setTimeout(()=>h.remove(),1000);
     }
-    function handleVote(id,btn,countEl){
-      if(hasVoted(id)) return;
-      recordVote(id);
-      btn.classList.add('voted'); btn.disabled=true; btn.innerText='❤️';
-      const r=btn.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2;
-      createHeartAnimation(x,y);
-      const dogs=getDogData(), d=dogs.find(d=>d.id===id);
-      if(d){ d.votes++; saveDogData(dogs); countEl.innerText=d.votes; countEl.classList.add('bump'); setTimeout(()=>countEl.classList.remove('bump'),300); }
-    }
-    function copyToClipboard(txt){
-      const ta=document.createElement('textarea'); ta.value=txt; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove();
-    }
-    function showTooltip(el,msg){
-      document.querySelectorAll('.tooltip').forEach(t=>t.remove());
-      const tip=document.createElement('div'); tip.className='tooltip'; tip.innerText=msg; 
-      const r=el.getBoundingClientRect();
-      tip.style.top=`${r.top-30}px`; tip.style.left=`${r.left+r.width/2-40}px`;
-      document.body.append(tip);
-      setTimeout(()=>tip.classList.add('show'),10);
-      setTimeout(()=>{ tip.classList.remove('show'); setTimeout(()=>tip.remove(),300); },2000);
-    }
-    function shareDogLink(id,name,btn){
-      const url=window.location.href.split('?')[0]+'?dog='+id;
-      copyToClipboard(url); showTooltip(btn,'Link copied!');
+
+    // vote POSTs to your Apps Script
+    function handleVote(id, btn, countEl) {
+      if(btn.disabled) return;
+      btn.disabled = true;
+      fetch(VOTE_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ id })
+      })
+      .then(r=>r.json())
+      .then(data=>{
+        if(data.success){
+          countEl.textContent = data.newVotes;
+          btn.classList.add('voted');
+          const rect=btn.getBoundingClientRect();
+          floatHeart(rect.left+rect.width/2, rect.top+rect.height/2);
+        } else {
+          alert('Error: '+data.message);
+          btn.disabled = false;
+        }
+      })
+      .catch(()=>{
+        alert('Network error');
+        btn.disabled = false;
+      });
     }
 
-    function renderDogs(list){
-      const gallery=document.getElementById('dog-gallery'); gallery.innerHTML='';
-      list.forEach(d=>{
-        const voted=hasVoted(d.id);
+    // render cards
+    function renderDogs(arr){
+      const g=document.getElementById('dog-gallery');
+      g.innerHTML='';
+      arr.forEach(dog=>{
         const card=document.createElement('div');
-        card.className='dog-card bg-white rounded-lg shadow-md relative';
+        card.className='dog-card bg-white rounded-lg overflow-hidden shadow-md relative';
         card.innerHTML=`
-          <div class="h-48 overflow-hidden"><img src="${d.image}" alt="${d.name}" class="w-full h-full object-cover"/></div>
+          <div class="h-48 overflow-hidden"><img src="${dog.image}" alt="${dog.name}" class="w-full h-full object-cover"></div>
           <div class="p-4">
             <div class="flex justify-between items-center">
-              <h3 class="text-xl font-bold">${d.name}</h3>
-              <button class="share-btn" data-id="${d.id}" data-name="${d.name}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M13.5 1a1.5 1.5 0 1 0 0 3 ..."/>
-                </svg>Share
-              </button>
+              <h3 class="text-xl font-bold">${dog.name}</h3>
+              <button class="share-btn">Share</button>
             </div>
             <div class="flex items-center mt-2">
-              <button class="heart-btn mr-2 text-2xl" ${voted?'disabled':''}>${voted?'❤️':'🤍'}</button>
-              <span class="vote-count text-lg font-semibold">${d.votes}</span><span class="ml-1">votes</span>
+              <button class="heart-btn mr-2 text-2xl focus:outline-none">${'🤍'}</button>
+              <span class="vote-count font-semibold text-lg">${dog.votes}</span>
+              <span class="ml-1 text-gray-600">votes</span>
             </div>
           </div>`;
-        gallery.append(card);
-        const hb=card.querySelector('.heart-btn'), vc=card.querySelector('.vote-count');
-        hb.addEventListener('click',()=>handleVote(d.id,hb,vc));
-        const sb=card.querySelector('.share-btn');
-        sb.addEventListener('click',()=>shareDogLink(d.id,d.name,sb));
+        g.appendChild(card);
+        const heart = card.querySelector('.heart-btn');
+        const count = card.querySelector('.vote-count');
+        heart.addEventListener('click', ()=>handleVote(dog.id, heart, count));
       });
-
-      // scroll to ?dog=ID if present
-      const pid=new URLSearchParams(location.search).get('dog');
-      if(pid){
-        setTimeout(()=>{
-          const cards=document.querySelectorAll('.dog-card');
-          const idx=list.findIndex(d=>d.id==pid);
-          if(cards[idx]) cards[idx].scrollIntoView({behavior:'smooth',block:'center'});
-        },500);
-      }
     }
 
-    function sortDogs(mode){
-      const arr=[...getDogData()];
-      if(mode==='name') arr.sort((a,b)=>a.name.localeCompare(b.name));
-      if(mode==='votes') arr.sort((a,b)=>b.votes-a.votes);
-      if(mode==='newest') arr.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    // sort
+    function sortDogs(by){
+      const arr=(window.liveDogData||[]).slice();
+      if(by==='name') arr.sort((a,b)=>a.name.localeCompare(b.name));
+      if(by==='votes') arr.sort((a,b)=>b.votes-a.votes);
+      if(by==='newest') arr.sort((a,b)=>new Date(b.date)-new Date(a.date));
       renderDogs(arr);
     }
 
-    function renderAdminList(){
-      const listEl=document.getElementById('dog-entries-list');
-      listEl.innerHTML='';
-      const arr=getDogData();
-      if(!arr.length) return listEl.innerHTML='<div class="p-4 text-gray-500">No dogs yet</div>';
-      arr.forEach(d=>{
-        const e=document.createElement('div'); e.className='dog-entry';
-        e.innerHTML=`
-          <img src="${d.image}" class="w-12 h-12 rounded-full mr-3"/>
-          <div class="flex-grow"><div class="font-semibold">${d.name}</div><div class="text-sm text-gray-500">${d.votes} votes</div></div>
-          <button class="delete-dog-btn text-red-500 px-2" data-id="${d.id}">×</button>`;
-        listEl.append(e);
-        e.querySelector('.delete-dog-btn').addEventListener('click',()=>{
-          if(confirm('Delete this dog?')){
-            const nd=getDogData().filter(x=>x.id!==d.id);
-            saveDogData(nd); updateTotal(); sortDogs(document.getElementById('sort-select').value); renderAdminList();
-          }
-        });
+    // load CSV from Sheet, parse & kick off
+    async function init(){
+      const res = await fetch(VOTE_URL+'?output=csv');
+      const text = await res.text();
+      const rows=text.trim().split('\n').slice(1);
+      window.liveDogData = rows.map(r=>{
+        const [id,name,votes,date,image] = r.split(',');
+        return { id:+id, name, votes:+votes, date, image };
       });
-    }
-
-    function addDog(){
-      const nm=document.getElementById('new-dog-name'), img=document.getElementById('new-dog-image');
-      if(!nm.value||!img.value) return alert('Name & URL required');
-      const arr=getDogData(), nid=arr.length? Math.max(...arr.map(x=>x.id))+1:1;
-      arr.push({id:nid,name:nm.value.trim(),image:img.value.trim(),votes:0,date:new Date().toISOString()});
-      saveDogData(arr); nm.value=''; img.value=''; renderAdminList(); updateTotal(); sortDogs(document.getElementById('sort-select').value);
-    }
-
-    function resetVotes(){
-      if(confirm('Reset all votes?')){
-        const arr=getDogData().map(x=>({...x,votes:0}));
-        saveDogData(arr); localStorage.removeItem('dogVotes');
-        renderAdminList(); sortDogs(document.getElementById('sort-select').value);
-      }
-    }
-
-    function updateTotal(){
-      document.getElementById('total-entries').innerText=getDogData().length;
-    }
-
-    // Fetch from Google Sheet CSV
-    async function fetchDogDataFromSheet(){
-      const url='https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=csv';
-      const txt=(await fetch(url)).text();
-      const rows=(await txt).trim().split('\n').slice(1);
-      const dogs=rows.map(r=>r.split(',')).filter(c=>c.length>=5).map(([i,n,v,d,img])=>({
-        id:+i,name:n, votes:+v, date:d, image:img
-      }));
-      localStorage.setItem('dogData',JSON.stringify(dogs));
-    }
-
-    async function initialiseVotingData(){
-      await fetchDogDataFromSheet();
-      checkAdminAccess();
-      updateTotal();
-      renderAdminList();
+      updateTotalEntries();
       sortDogs('name');
-      // wire up UI
-      document.getElementById('sort-select').addEventListener('change',e=>sortDogs(e.target.value));
-      document.getElementById('admin-toggle').addEventListener('click',()=> {
-        const p=document.getElementById('admin-panel');
-        p.style.display=p.style.display==='block'?'none':'block';
-      });
-      document.getElementById('add-dog-btn').addEventListener('click',addDog);
-      document.getElementById('reset-votes-btn').addEventListener('click',resetVotes);
-      document.getElementById('logout-btn').addEventListener('click',handleAdminLogout);
-      document.addEventListener('keydown',e=>{ if(e.ctrlKey&&e.shiftKey&&e.key==='A') showLoginOverlay(); });
-      document.getElementById('login-btn').addEventListener('click',handleAdminLogin);
-      document.getElementById('cancel-login-btn').addEventListener('click',hideLoginOverlay);
+      document.getElementById('sort-select').onchange = e=>sortDogs(e.target.value);
     }
 
-    document.addEventListener('DOMContentLoaded', initialiseVotingData);
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
