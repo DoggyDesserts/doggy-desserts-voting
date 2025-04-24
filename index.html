@@ -312,14 +312,12 @@
             alert('You have been logged out successfully.');
         }
         
+// Get dog data from external file
+function getDogData() {
+  return dogData;
+}
+        }
 
-        }
-        
-        // Get dog data from local storage
-        function getDogData() {
-            return JSON.parse(localStorage.getItem('dogData') || '[]');
-        }
-        
         // Save dog data to local storage
         function saveDogData(data) {
             localStorage.setItem('dogData', JSON.stringify(data));
