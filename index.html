@@ -728,6 +728,42 @@ function getDogData() {
             });
         });
     </script>
-    <script src="dogData.js"></script>
+    <script>
+async function fetchDogDataFromSheet() {
+  const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=csv';
+
+  const response = await fetch(sheetUrl);
+  const text = await response.text();
+  const rows = text.split('\n').slice(1); // Skip header
+
+  const dogs = rows
+    .map(row => row.split(','))
+    .filter(cells => cells.length >= 5)
+    .map(([id, name, votes, date, image]) => ({
+      id: parseInt(id),
+      name: name.trim(),
+      votes: parseInt(votes) || 0,
+      date: date.trim(),
+      image: image.trim()
+    }))
+    .filter(d => d.id && d.name && d.image);
+
+  return dogs;
+}
+
+function getDogData() {
+  return window.liveDogData || [];
+}
+
+async function initialiseVotingData() {
+  const data = await fetchDogDataFromSheet();
+  window.liveDogData = data;
+  updateTotalEntries();
+  sortDogs('name');
+  renderAdminDogEntries();
+}
+
+document.addEventListener('DOMContentLoaded', initialiseVotingData);
+</script>
 </body>
 </html>
