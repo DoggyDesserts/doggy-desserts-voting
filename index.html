@@ -312,15 +312,7 @@
             alert('You have been logged out successfully.');
         }
         
-        // Initialize local storage if needed
-        if (!localStorage.getItem('dogData')) {
-            // Sample initial data
-            const initialDogs = [
-                { id: 1, name: "Max", image: "https://images.unsplash.com/photo-1543466835-00a7907e9de1", votes: 24, date: new Date().toISOString() },
-                { id: 2, name: "Bella", image: "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8", votes: 18, date: new Date().toISOString() },
-                { id: 3, name: "Charlie", image: "https://images.unsplash.com/photo-1518717758536-85ae29035b6d", votes: 32, date: new Date().toISOString() }
-            ];
-            localStorage.setItem('dogData', JSON.stringify(initialDogs));
+
         }
         
         // Get dog data from local storage
@@ -739,5 +731,6 @@
             });
         });
     </script>
+    <script src="dogData.js"></script>
 </body>
 </html>
