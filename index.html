@@ -20,10 +20,8 @@
     .heart-btn { transition: all .2s ease; cursor:pointer; }
     .heart-btn:hover:not(.voted) { transform: scale(1.1); }
     .heart-btn.voted { color: var(--secondary); animation: heartBeat .3s ease-in-out; }
-    @keyframes heartBeat {
-      0%{transform:scale(1)}25%{transform:scale(1.3)}50%{transform:scale(1)}75%{transform:scale(1.2)}100%{transform:scale(1)}
-    }
-    .heart-animation { position:absolute; pointer-events:none; animation:floatUp 1s ease-out forwards; opacity:0;}
+    @keyframes heartBeat {0%{transform:scale(1)}25%{transform:scale(1.3)}50%{transform:scale(1)}75%{transform:scale(1.2)}100%{transform:scale(1)}}
+    .heart-animation { position:absolute; pointer-events:none; animation:floatUp 1s ease-out forwards; opacity:0; }
     @keyframes floatUp {0%{transform:translateY(0) scale(.5);opacity:1}100%{transform:translateY(-50px) scale(1.5);opacity:0}}
     .vote-count.bump { animation: bump .3s ease; }
     @keyframes bump {0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
@@ -50,7 +48,9 @@
     </div>
 
     <div class="flex justify-between items-center mb-6 relative z-10">
-      <div class="text-lg font-semibold text-[#ab5896]"><span id="total-entries">0</span> Entries</div>
+      <div class="text-lg font-semibold text-[#ab5896]">
+        <span id="total-entries">0</span> Entries
+      </div>
       <div class="flex items-center">
         <label for="sort-select" class="mr-2 text-gray-700">Sort by:</label>
         <select id="sort-select" class="bg-white border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-[#54b8b2]">
@@ -67,61 +67,81 @@
   </div>
 
   <script>
-    // ── CONFIG ─────────────────────────────────────
-    const sheetUrl = 
+    // ─── CONFIG ───────────────────────
+    const sheetUrl =
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?gid=0&single=true&output=csv';
-    const voteEndpoint = 
+    const voteEndpoint =
       'https://script.google.com/macros/s/AKfycbwHrvAKb4o9GSIP84yBqd2q1MxDBJT0cT5Sf7SV5tIl1VempJqs6BjCjg5zb_DC3PG7aA/exec';
-    const KEY = 'v2_voted_';  // clear localStorage to reset all
+    const KEY = 'v2_voted_';
 
-    // ── HELPERS ─────────────────────────────────────
-    function createHeartAnimation(x,y){
+    // ─── HELPERS ─────────────────────
+    function createHeartAnimation(x, y) {
       const h = document.createElement('div');
-      h.innerText='❤️'; h.className='heart-animation text-2xl';
-      h.style.left=`${x}px`; h.style.top=`${y}px`;
+      h.innerText = '❤️';
+      h.className = 'heart-animation text-2xl';
+      h.style.left = x + 'px';
+      h.style.top  = y + 'px';
       document.body.appendChild(h);
-      setTimeout(()=>h.remove(),1000);
+      setTimeout(() => h.remove(), 1000);
     }
-    function showTooltip(el,msg){
-      document.querySelectorAll('.tooltip').forEach(t=>t.remove());
+
+    function showTooltip(el, msg) {
+      document.querySelectorAll('.tooltip').forEach(t => t.remove());
       const tip = document.createElement('div');
-      tip.className='tooltip'; tip.innerText=msg;
+      tip.className = 'tooltip';
+      tip.innerText = msg;
       const r = el.getBoundingClientRect();
-      tip.style.top=`${r.top-30}px`; tip.style.left=`${r.left+r.width/2-40}px`;
+      tip.style.top  = (r.top - 30) + 'px';
+      tip.style.left = (r.left + r.width/2 - 40) + 'px';
       document.body.appendChild(tip);
-      requestAnimationFrame(()=>tip.classList.add('show'));
-      setTimeout(()=>{ tip.classList.remove('show'); setTimeout(()=>tip.remove(),300); },2000);
+      requestAnimationFrame(() => tip.classList.add('show'));
+      setTimeout(() => {
+        tip.classList.remove('show');
+        setTimeout(()=>tip.remove(), 300);
+      }, 2000);
     }
 
-    function hasVoted(id){ return localStorage.getItem(KEY+id)==='true'; }
-    async function postVote(id){
-      await fetch(voteEndpoint,{
-        method:'POST',
-        body: JSON.stringify({id})
+    // ─── VOTING LOGIC ─────────────────
+    function hasVoted(id) {
+      return localStorage.getItem(KEY + id) === 'true';
+    }
+
+    async function postVote(id) {
+      await fetch(voteEndpoint, {
+        method: 'POST',
+        body: JSON.stringify({ id })
       });
-      localStorage.setItem(KEY+id,'true');
+      localStorage.setItem(KEY + id, 'true');
     }
 
-    async function fetchDogData(){
+    // ─── DATA FETCH ───────────────────
+    async function fetchDogData() {
       const res = await fetch(sheetUrl);
-      if(!res.ok) throw 'CSV load failed';
+      if (!res.ok) throw new Error('CSV load failed');
       const text = await res.text();
-      return text.trim().split('\n').slice(1).map(r=>{
-        const [id,name,votes,date,image] = r.split(',');
-        return { id:+id, name:name.trim(), votes:+votes, date:date.trim(), image:image.trim() };
+      return text.trim().split('\n').slice(1).map(r => {
+        let [id,name,votes,date,image] = r.split(',');
+        return {
+          id:     +id,
+          name:   name.trim(),
+          votes:  +votes,
+          date:   date.trim(),
+          image:  image.trim()
+        };
       });
     }
 
-    function renderDogs(dogs){
-      const g = document.getElementById('dog-gallery');
-      g.innerHTML = '';
+    // ─── RENDER ───────────────────────
+    function renderDogs(dogs) {
+      const gallery = document.getElementById('dog-gallery');
+      gallery.innerHTML = '';
       dogs.forEach(d => {
         const voted = hasVoted(d.id);
         const card = document.createElement('div');
         card.className = 'dog-card bg-white rounded-lg shadow-md relative';
         card.innerHTML = `
-          <div class="h-48 overflow-hidden">
-            <img src="${d.image}" alt="${d.name}" class="w-full h-full object-cover"/>
+          <div class="overflow-hidden" style="aspect-ratio:1/1;">
+            <img src="${d.image}" alt="${d.name}" class="w-full h-full object-contain"/>
           </div>
           <div class="p-4 flex justify-between items-center">
             <h3 class="text-xl font-bold text-gray-800">${d.name}</h3>
@@ -135,48 +155,45 @@
             <span class="ml-1 text-gray-600">votes</span>
           </div>
         `;
-        g.appendChild(card);
+        gallery.appendChild(card);
 
+        // handle vote
         const heart = card.querySelector('.heart-btn');
         const count = card.querySelector('.vote-count');
-
         heart.onclick = () => {
           if (heart.disabled) return;
-          // **instant fill & color**
           heart.innerText = '❤️';
           heart.classList.add('voted');
           heart.disabled = true;
 
-          // bump count
           d.votes++;
           count.textContent = d.votes;
           count.classList.add('bump');
-          setTimeout(()=>count.classList.remove('bump'),300);
+          setTimeout(()=>count.classList.remove('bump'), 300);
 
-          // float animation
           const r = heart.getBoundingClientRect();
           createHeartAnimation(r.left + r.width/2, r.top + r.height/2);
-
-          // fire & forget
           postVote(d.id).catch(console.error);
         };
 
+        // handle share
         const share = card.querySelector('.share-btn');
         share.onclick = () => {
           const url = `${location.origin}${location.pathname}?dog=${d.id}`;
           navigator.clipboard.writeText(url);
-          showTooltip(share,'Link copied!');
+          showTooltip(share, 'Link copied!');
         };
       });
     }
 
-    function sortDogs(arr,by){
-      if(by==='name')   arr.sort((a,b)=>a.name.localeCompare(b.name));
-      if(by==='votes')  arr.sort((a,b)=>b.votes - a.votes);
-      if(by==='newest') arr.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    // ─── SORT & INIT ──────────────────
+    function sortDogs(arr, by) {
+      if (by === 'name')   arr.sort((a,b)=>a.name.localeCompare(b.name));
+      if (by === 'votes')  arr.sort((a,b)=>b.votes - a.votes);
+      if (by === 'newest') arr.sort((a,b)=>new Date(b.date) - new Date(a.date));
     }
 
-    async function init(){
+    async function initialize() {
       const dogs = await fetchDogData();
       document.getElementById('total-entries').textContent = dogs.length;
       const sel = document.getElementById('sort-select');
@@ -188,7 +205,7 @@
       renderDogs(dogs);
     }
 
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', initialize);
   </script>
 </body>
 </html>
