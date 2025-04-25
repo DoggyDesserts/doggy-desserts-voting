@@ -120,12 +120,11 @@
   </div>
 
   <script>
-    // 1) Your public sheet CSV URL
-    const sheetUrl =
-      'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=csv';
-    // 2) Your Apps-Script POST endpoint for voting
-    const voteEndpoint =
-      'https://script.google.com/macros/s/AKfycbwHrvAKb4o9GSIP84yBqd2q1MxDBJT0cT5Sf7SV5tIl1VempJqs6BjCjg5zb_DC3PG7aA/exec';
+   // 1) Your public sheet CSV URL
+const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/1AbCdEfGhIjKlMnOpQrStUvWxYz/pub?output=csv';
+
+// 2) Your Apps-Script POST endpoint for voting
+const voteEndpoint = 'https://script.google.com/macros/s/AKfycbwHrvAKb4o9GSIP84yBqd2q1MxDBJT0cT5Sf7SV5tIl1VempJqs6BjCjg5zb_DC3PG7aA/exec';
 
     async function fetchDogDataFromSheet() {
       const res = await fetch(sheetUrl);
