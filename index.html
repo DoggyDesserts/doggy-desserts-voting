@@ -26,6 +26,17 @@
     .tooltip.show { opacity:1; }
     .lazy-img { filter: blur(10px); transition: filter 0.3s ease; }
     .lazy-img.loaded { filter: blur(0); }
+    .skeleton {
+      background-color: #e0e0e0;
+      border-radius: 8px;
+      height: 320px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -81,6 +92,16 @@
       }, 2000);
     }
 
+    function showSkeletons(count) {
+      const gallery = document.getElementById('dog-gallery');
+      gallery.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const skeletonCard = document.createElement('div');
+        skeletonCard.className = 'skeleton';
+        gallery.appendChild(skeletonCard);
+      }
+    }
+
     async function fetchDogData() {
       const res = await fetch(sheetUrl);
       if (!res.ok) throw new Error('CSV load failed');
@@ -119,7 +140,6 @@
         `;
         gallery.appendChild(card);
 
-        // Disable voting
         const heart = card.querySelector('.heart-btn');
         heart.onclick = () => {
           showTooltip(heart, "Thanks for voting! April's winner has already been chosen – voting is now closed.");
@@ -133,7 +153,6 @@
         };
       });
 
-      // Lazy load images
       const lazyImgs = document.querySelectorAll('img.lazy-img');
       const io = new IntersectionObserver(entries => {
         entries.forEach(entry => {
@@ -155,6 +174,7 @@
     }
 
     async function initialize() {
+      showSkeletons(8);
       const dogs = await fetchDogData();
       document.getElementById('total-entries').textContent = dogs.length;
       const sel = document.getElementById('sort-select');
