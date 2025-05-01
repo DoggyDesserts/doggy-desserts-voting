@@ -43,7 +43,10 @@
       <h1 class="text-4xl md:text-5xl font-bold text-[#54b8b2] mb-2">Doggy Desserts</h1>
       <h2 class="text-2xl md:text-3xl font-semibold text-[#ab5896] mb-4">Monthly Dog Photo Competition</h2>
       <p class="text-lg text-gray-700 max-w-2xl mx-auto">
-        Vote for your favorite doggy! Each person can vote once per dog.
+        Vote for your favourite doggy! Each person can vote once per dog.
+      </p>
+      <p class="mt-2 text-sm text-red-600 font-semibold">
+        Voting has now closed for April – thank you to everyone who took part!
       </p>
     </div>
 
@@ -70,21 +73,9 @@
     // ─── CONFIG ───────────────────────
     const sheetUrl =
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?gid=0&single=true&output=csv';
-    const voteEndpoint =
-      'https://script.google.com/macros/s/AKfycbwHrvAKb4o9GSIP84yBqd2q1MxDBJT0cT5Sf7SV5tIl1VempJqs6BjCjg5zb_DC3PG7aA/exec';
     const KEY = 'v2_voted_';
 
     // ─── HELPERS ─────────────────────
-    function createHeartAnimation(x, y) {
-      const h = document.createElement('div');
-      h.innerText = '❤️';
-      h.className = 'heart-animation text-2xl';
-      h.style.left = x + 'px';
-      h.style.top  = y + 'px';
-      document.body.appendChild(h);
-      setTimeout(() => h.remove(), 1000);
-    }
-
     function showTooltip(el, msg) {
       document.querySelectorAll('.tooltip').forEach(t => t.remove());
       const tip = document.createElement('div');
@@ -92,26 +83,13 @@
       tip.innerText = msg;
       const r = el.getBoundingClientRect();
       tip.style.top  = (r.top - 30) + 'px';
-      tip.style.left = (r.left + r.width/2 - 40) + 'px';
+      tip.style.left = (r.left + r.width/2 - 80) + 'px';
       document.body.appendChild(tip);
       requestAnimationFrame(() => tip.classList.add('show'));
       setTimeout(() => {
         tip.classList.remove('show');
         setTimeout(()=>tip.remove(), 300);
       }, 2000);
-    }
-
-    // ─── VOTING LOGIC ─────────────────
-    function hasVoted(id) {
-      return localStorage.getItem(KEY + id) === 'true';
-    }
-
-    async function postVote(id) {
-      await fetch(voteEndpoint, {
-        method: 'POST',
-        body: JSON.stringify({ id })
-      });
-      localStorage.setItem(KEY + id, 'true');
     }
 
     // ─── DATA FETCH ───────────────────
@@ -136,7 +114,6 @@
       const gallery = document.getElementById('dog-gallery');
       gallery.innerHTML = '';
       dogs.forEach(d => {
-        const voted = hasVoted(d.id);
         const card = document.createElement('div');
         card.className = 'dog-card bg-white rounded-lg shadow-md relative';
         card.innerHTML = `
@@ -148,32 +125,17 @@
             <button class="share-btn text-gray-700 bg-gray-100 px-2 py-1 rounded-md">Share</button>
           </div>
           <div class="px-4 pb-4 flex items-center">
-            <button class="heart-btn text-2xl mr-2 ${voted?'voted':''}" ${voted?'disabled':''}>
-              ${voted?'❤️':'🤍'}
-            </button>
+            <button class="heart-btn text-2xl mr-2" title="Voting closed">🤍</button>
             <span class="vote-count font-semibold text-lg">${d.votes}</span>
             <span class="ml-1 text-gray-600">votes</span>
           </div>
         `;
         gallery.appendChild(card);
 
-        // handle vote
+        // handle vote (disabled with message)
         const heart = card.querySelector('.heart-btn');
-        const count = card.querySelector('.vote-count');
         heart.onclick = () => {
-          if (heart.disabled) return;
-          heart.innerText = '❤️';
-          heart.classList.add('voted');
-          heart.disabled = true;
-
-          d.votes++;
-          count.textContent = d.votes;
-          count.classList.add('bump');
-          setTimeout(()=>count.classList.remove('bump'), 300);
-
-          const r = heart.getBoundingClientRect();
-          createHeartAnimation(r.left + r.width/2, r.top + r.height/2);
-          postVote(d.id).catch(console.error);
+          showTooltip(heart, "Thanks for voting! April's winner has already been chosen – voting is now closed.");
         };
 
         // handle share
