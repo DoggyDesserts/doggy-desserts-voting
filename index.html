@@ -76,6 +76,11 @@
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?gid=0&single=true&output=csv';
     const KEY = 'v2_voted_';
 
+    function sendHeightToParent() {
+      const height = document.body.scrollHeight;
+      parent.postMessage({ type: 'setHeight', height: height }, '*');
+    }
+
     function showTooltip(el, msg) {
       document.querySelectorAll('.tooltip').forEach(t => t.remove());
       const tip = document.createElement('div');
@@ -165,6 +170,8 @@
         });
       });
       lazyImgs.forEach(img => io.observe(img));
+
+      sendHeightToParent(); // 🔥 Trigger resize after rendering
     }
 
     function sortDogs(arr, by) {
@@ -186,7 +193,10 @@
       renderDogs(dogs);
     }
 
-    document.addEventListener('DOMContentLoaded', initialize);
+    document.addEventListener('DOMContentLoaded', () => {
+      initialize();
+      sendHeightToParent(); // 🔥 Trigger resize early just in case
+    });
   </script>
 </body>
 </html>
