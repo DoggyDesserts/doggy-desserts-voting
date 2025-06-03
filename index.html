@@ -3,142 +3,155 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Doggy Desserts - Monthly Dog Competition</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Doggy Desserts Voting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-    :root {
-      --teal: #25b3ad;
-      --cream: #fffbee;
-      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    html {
+      scroll-behavior: smooth;
+      font-family: 'Poppins', sans-serif;
     }
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--cream);
-      padding: 2rem;
+      margin: 0;
+      background: #fdfaf6;
     }
-    .container-box {
-      background-color: white;
-      border-radius: 1rem;
+    header {
+      background: #25b3ad;
+      colour: white;
       padding: 2rem;
-      box-shadow: var(--shadow);
-      max-width: 1200px;
-      margin: 0 auto;
+      text-align: centre;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+    .container {
+      background: #fffdf9;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      border-radius: 20px;
+      max-width: 900px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
     .dog-card {
-      border-radius: 1rem;
-      background-color: #fdfdfd;
-      box-shadow: var(--shadow);
+      margin: 1.2rem 0;
       padding: 1rem;
-      text-align: center;
-      transition: transform 0.2s ease;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: centre;
+      gap: 1rem;
     }
-    .dog-card:hover {
-      transform: translateY(-4px);
+    .dog-card img {
+      max-width: 100px;
+      height: auto;
+      border-radius: 12px;
     }
-    .dog-img {
-      width: 100%;
-      border-radius: 0.75rem;
-      background-color: #ececec;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
+    .dog-name {
+      font-size: 1.2rem;
+      font-weight: 600;
     }
     .vote-btn {
-      margin-top: 0.75rem;
-      display: inline-block;
-      background-color: #f5f5f5;
-      border-radius: 999px;
-      padding: 0.5rem 1.5rem;
-      font-weight: 500;
+      margin-left: auto;
+      background: #25b3ad;
+      colour: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: transform 0.2s;
     }
     .vote-btn:hover {
-      background-color: #e1f7f6;
+      transform: scale(1.05);
     }
-    .voted {
-      background-color: #d6f6f4 !important;
-      pointer-events: none;
-      opacity: 0.7;
+    .highlight {
+      animation: pulse 1s ease-out;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0px #25b3ad; }
+      50% { box-shadow: 0 0 20px #25b3ad; }
+      100% { box-shadow: 0 0 0px #25b3ad; }
     }
   </style>
 </head>
 <body>
-  <div class="container-box max-w-full sm:max-w-screen-md px-4 sm:px-8">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-[var(--teal)]">Doggy Desserts</h1>
-      <h2 class="text-2xl font-semibold text-gray-800 mt-2">Monthly Dog Photo Competition</h2>
-      <p class="text-gray-600 mt-1">Vote for your favourite doggy. Each person can vote once per dog.</p>
-    </header>
+  <header>
+    Doggy Desserts Monthly Dog Photo Competition<br>
+    <span style="font-size:1rem; font-weight:400;">Voting is open until 7th June – cast your votes below!</span>
+  </header>
 
-    <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+  <div class="container" id="vote-container">
+    <!-- Dog cards will load here -->
   </div>
 
   <script>
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=csv";
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=csv';
+    const submitURL = 'https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec';
 
-    function fetchData() {
-      return fetch(sheetUrl)
-        .then(res => res.text())
-        .then(csv => {
-          const lines = csv.trim().split("\n").slice(1);
-          return lines.map(line => {
-            const [id, name, votes, date, image] = line.split(",");
-            return {
-              id: +id,
-              name: name.trim(),
-              votes: +votes,
-              date: date.trim(),
-              image: image.trim()
-            };
-          });
-        });
-    }
+    const voted = JSON.parse(localStorage.getItem("votedDogs") || "[]");
 
-    function createCard(dog) {
-      const votedKey = `voted_June_2025_${dog.id}`;
-      const hasVoted = localStorage.getItem(votedKey);
+    function createCard(name, image, votes) {
+      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const card = document.createElement("div");
+      card.className = "dog-card";
+      card.id = id;
 
-      const div = document.createElement("div");
-      div.className = "dog-card";
+      const img = document.createElement("img");
+      img.src = image;
+      img.alt = name;
 
-      div.innerHTML = `
-        <img src="${dog.image}" alt="${dog.name}" class="dog-img mb-4">
-        <h3 class="text-lg font-semibold text-[var(--teal)]">${dog.name}</h3>
-        <div class="vote-btn ${hasVoted ? 'voted' : ''}" data-id="${dog.id}">
-          ♡ Vote
-        </div>
-      `;
+      const title = document.createElement("div");
+      title.className = "dog-name";
+      title.textContent = name;
 
-      const button = div.querySelector(".vote-btn");
-      if (!hasVoted) {
-        button.addEventListener("click", () => {
-          localStorage.setItem(votedKey, "true");
-          button.classList.add("voted");
-          button.textContent = "✓ Voted";
+      const voteBtn = document.createElement("button");
+      voteBtn.className = "vote-btn";
+      voteBtn.textContent = voted.includes(name) ? "✓ Voted" : "Vote";
 
-          fetch("https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec", {
+      if (!voted.includes(name)) {
+        voteBtn.onclick = () => {
+          fetch(submitURL, {
             method: "POST",
-            body: new URLSearchParams({ id: dog.id }),
-            mode: "no-cors"
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name })
+          }).then(res => {
+            if (res.ok) {
+              voted.push(name);
+              localStorage.setItem("votedDogs", JSON.stringify(voted));
+              voteBtn.textContent = "✓ Voted";
+              voteBtn.disabled = true;
+            }
           });
-        });
+        };
       } else {
-        button.textContent = "✓ Voted";
+        voteBtn.disabled = true;
       }
 
-      return div;
+      card.appendChild(img);
+      card.appendChild(title);
+      card.appendChild(voteBtn);
+      return card;
     }
 
-    function renderDogs(dogs) {
-      const container = document.getElementById("gallery");
-      container.innerHTML = "";
-      dogs.forEach(dog => container.appendChild(createCard(dog)));
-    }
+    fetch(sheetURL)
+      .then(res => res.text())
+      .then(text => {
+        const rows = text.trim().split("\n").slice(1);
+        const container = document.getElementById("vote-container");
+        rows.forEach(row => {
+          const [id, name, , , image] = row.split(",");
+          container.appendChild(createCard(name.trim(), image.trim()));
+        });
 
-    document.addEventListener("DOMContentLoaded", () => {
-      fetchData().then(renderDogs);
-    });
+        // Scroll to dog if hash exists
+        const hash = window.location.hash;
+        if (hash) {
+          const target = document.querySelector(hash);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
+            target.classList.add("highlight");
+            setTimeout(() => target.classList.remove("highlight"), 1500);
+          }
+        }
+      });
   </script>
 </body>
 </html>
