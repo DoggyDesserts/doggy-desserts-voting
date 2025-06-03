@@ -78,7 +78,7 @@
   </div>
 
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdPpLhFySlOwKspB91rV4qFDMOOcE5nRuFUNhtip1SaJYopsOacuNlsR1WhAR4x6IYCw3fJWaFonjX/pub?output=csv';
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdPpLhFySlOwKspB91rV4qFDM0OcE5nRuFUNhtip1SaJYopsOacuNlsR1WhAR4x6IYCw3fJWaFonjX/pub?output=csv';
     const submitUrl = 'https://script.google.com/macros/s/AKfycbzCaD5TG6HwuarF1cUwPepNnm8ZDX_dVegZZ-7cBWxcPJZtncnO0enOPyEJNSddBC2Olg/exec';
     const KEY = 'v3_vote_';
 
@@ -97,7 +97,7 @@
       tip.innerText = msg;
       const r = el.getBoundingClientRect();
       tip.style.top = (r.top - 30) + 'px';
-      tip.style.left = (r.left + r.width / 2 - 80) + 'px';
+      tip.style.left = (r.left + r.width/2 - 80) + 'px';
       document.body.appendChild(tip);
       requestAnimationFrame(() => tip.classList.add('show'));
       setTimeout(() => {
@@ -145,6 +145,7 @@
 
         voteBtn.onclick = async () => {
           if (localStorage.getItem(votedKey)) return showTooltip(voteBtn, 'You already voted for this dog!');
+
           voteBtn.classList.add('voted');
           localStorage.setItem(votedKey, '1');
           voteCount.textContent = parseInt(voteCount.textContent) + 1;
@@ -152,7 +153,7 @@
           await fetch(submitUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: { id: dog.id } })
+            body: JSON.stringify({ id: dog.id })
           }).then(res => res.text())
             .then(data => console.log('Vote response:', data))
             .catch(err => console.error('Vote error:', err));
