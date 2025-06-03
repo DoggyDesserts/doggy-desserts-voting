@@ -2,196 +2,165 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Doggy Desserts Voting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doggy Desserts Monthly Dog Photo Vote</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
+      margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: #fdfaf5;
-      margin: 0;
-      padding: 0;
-      color: #333;
+      background: #fefcf8;
+      colour: #333;
     }
-    .header {
-      background: #25b3ad;
+
+    header {
+      background-color: #25b3ad;
       colour: white;
+      padding: 2rem;
       text-align: center;
-      padding: 1.5rem;
-      border-radius: 0 0 20px 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      font-weight: 600;
+      border-bottom: 5px solid #fff;
     }
-    .header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      colour: white;
-    }
-    .header p {
-      margin-top: 0.5rem;
-      colour: white;
-    }
+
     .container {
       max-width: 1200px;
       margin: 2rem auto;
       padding: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
     }
+
     .card {
-      background: white;
-      border-radius: 20px;
+      background: #fffaf2;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       padding: 1rem;
-      width: 250px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       text-align: center;
       transition: transform 0.2s;
     }
-    .card:hover {
-      transform: scale(1.02);
-    }
+
     .card img {
       width: 100%;
       height: auto;
-      border-radius: 16px;
-      margin-bottom: 0.75rem;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
     }
+
     .card h3 {
       margin: 0.5rem 0;
+      font-size: 1.1rem;
     }
-    .vote-count {
-      margin: 0.25rem 0;
-      font-size: 0.9rem;
-      colour: #666;
+
+    .votes {
+      font-size: 1rem;
+      margin: 0.5rem 0;
     }
-    .vote-button {
-      background: #25b3ad;
+
+    .btn {
+      background-color: #25b3ad;
       colour: white;
       border: none;
       padding: 0.5rem 1rem;
-      border-radius: 999px;
-      cursor: pointer;
+      border-radius: 2rem;
       font-weight: 600;
-      margin-top: 0.5rem;
-    }
-    .vote-button:hover {
-      opacity: 0.9;
-    }
-    .share-link {
-      font-size: 0.8rem;
-      margin-top: 0.4rem;
       cursor: pointer;
-      colour: #25b3ad;
-      text-decoration: underline;
+      transition: background 0.2s;
     }
-    .toast {
-      position: fixed;
-      bottom: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #25b3ad;
-      colour: white;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      display: none;
+
+    .btn:hover {
+      background-color: #1e918d;
+    }
+
+    .voted {
+      background-color: #ccc;
+      cursor: default;
+    }
+
+    .message {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      colour: green;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        grid-template-columns: 1fr;
+        padding: 0.5rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>This Month's Dog Photo Competition</h1>
-    <p>Voting closes Sunday 9th June at midnight!</p>
-  </div>
+  <header>
+    <h1>Vote for Your Favourite Dog!</h1>
+    <p>Voting ends 7th June – one vote per dog, per person.</p>
+  </header>
 
-  <div class="container" id="dogContainer"></div>
-
-  <div class="toast" id="toast">Thanks for voting!</div>
+  <main class="container" id="dogContainer">
+    <!-- Cards inserted via JS -->
+  </main>
 
   <script>
-    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=tsv';
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec';
-    const votedDogs = JSON.parse(localStorage.getItem('votedDogs') || '[]');
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.style.display = 'block';
-      setTimeout(() => toast.style.display = 'none', 2000);
-    }
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=csv";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec";
+    const votedDogs = JSON.parse(localStorage.getItem("votedDogs") || "[]");
 
     fetch(sheetURL)
       .then(res => res.text())
-      .then(text => {
-        const rows = text.trim().split('\n').map(row => row.split('\t'));
-        const [header, ...data] = rows;
-        const container = document.getElementById('dogContainer');
-        data.forEach(([id, name, votes, , imageUrl]) => {
-          const lowerName = name.toLowerCase().replace(/\s+/g, '-');
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.id = lowerName;
+      .then(data => {
+        const rows = data.trim().split("\n").slice(1);
+        const dogs = rows.map(row => {
+          const [id, name, votes, date, image] = row.split(",");
+          return { id, name, votes: parseInt(votes), date, image };
+        });
 
+        dogs.sort((a, b) => a.name.localeCompare(b.name));
+        const container = document.getElementById("dogContainer");
+
+        dogs.forEach(dog => {
+          const card = document.createElement("div");
+          card.className = "card";
           card.innerHTML = `
-            <img src="${imageUrl}" alt="${name}" />
-            <h3>${name}</h3>
-            <p class="vote-count" id="count-${lowerName}">${votes} vote${votes !== '1' ? 's' : ''}</p>
-            <button class="vote-button" data-id="${id}" data-name="${name}" ${votedDogs.includes(id) ? 'disabled' : ''}>${votedDogs.includes(id) ? 'Voted!' : 'Vote'}</button>
-            <div class="share-link" onclick="copyLink('${lowerName}')">Copy Share Link</div>
+            <img src="${dog.image}" alt="${dog.name}">
+            <h3>${dog.name}</h3>
+            <p class="votes" id="votes-${dog.id}">${dog.votes} votes</p>
+            <button class="btn" id="vote-${dog.id}">Vote</button>
+            <div class="message" id="msg-${dog.id}"></div>
           `;
           container.appendChild(card);
-        });
 
-        document.querySelectorAll('.vote-button').forEach(button => {
-          button.addEventListener('click', () => {
-            const id = button.getAttribute('data-id');
-            const name = button.getAttribute('data-name');
-            if (votedDogs.includes(id)) return;
+          const voteBtn = document.getElementById(`vote-${dog.id}`);
+          const msg = document.getElementById(`msg-${dog.id}`);
 
-            fetch(scriptURL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id, name })
-            })
-            .then(res => res.json())
-            .then(() => {
-              votedDogs.push(id);
-              localStorage.setItem('votedDogs', JSON.stringify(votedDogs));
-              button.disabled = true;
-              button.textContent = 'Voted!';
-              const countEl = document.getElementById(`count-${name.toLowerCase().replace(/\s+/g, '-')}`);
-              let current = parseInt(countEl.textContent) || 0;
-              countEl.textContent = `${current + 1} votes`;
-              showToast('Thanks for voting!');
+          if (votedDogs.includes(dog.id)) {
+            voteBtn.classList.add("voted");
+            voteBtn.innerText = "Voted";
+            voteBtn.disabled = true;
+          } else {
+            voteBtn.addEventListener("click", () => {
+              fetch(scriptURL, {
+                method: "POST",
+                body: new URLSearchParams({ id: dog.id })
+              })
+              .then(() => {
+                votedDogs.push(dog.id);
+                localStorage.setItem("votedDogs", JSON.stringify(votedDogs));
+                voteBtn.classList.add("voted");
+                voteBtn.innerText = "Voted";
+                voteBtn.disabled = true;
+                const voteEl = document.getElementById(`votes-${dog.id}`);
+                voteEl.innerText = `${dog.votes + 1} votes`;
+                msg.innerText = "Thanks for voting!";
+              })
+              .catch(err => {
+                msg.innerText = "Error. Try again.";
+              });
             });
-          });
+          }
         });
       });
-
-    function copyLink(id) {
-      const link = `${window.location.href.split('#')[0]}#${id}`;
-      navigator.clipboard.writeText(link).then(() => showToast('Link copied!'));
-    }
-
-    // Scroll to dog if hash present
-    window.addEventListener('load', () => {
-      const targetId = window.location.hash.slice(1);
-      if (targetId) {
-        const target = document.getElementById(targetId);
-        if (target) {
-          setTimeout(() => {
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.style.boxShadow = '0 0 0 5px #25b3ad33';
-            setTimeout(() => target.style.boxShadow = '', 3000);
-          }, 300);
-        }
-      }
-    });
   </script>
-
 </body>
 </html>
