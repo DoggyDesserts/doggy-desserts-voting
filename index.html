@@ -54,16 +54,12 @@
     .tooltip.show {
       opacity: 1;
     }
-    .skeleton {
-      background-color: #e0e0e0;
-      height: 320px;
-      border-radius: 1rem;
-      animation: pulse 1.5s infinite;
+    .lazy-img {
+      filter: blur(10px);
+      transition: filter 0.3s ease;
     }
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.4; }
-      100% { opacity: 1; }
+    .lazy-img.loaded {
+      filter: blur(0);
     }
   </style>
 </head>
@@ -77,16 +73,12 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="dog-gallery">
-      <!-- Skeletons -->
-      <template id="skeleton-template">
-        <div class="dog-card skeleton"></div>
-      </template>
+      <!-- Cards go here -->
     </div>
   </div>
 
   <script>
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?gid=0&single=true&output=csv';
-    const submitUrl = 'https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec';
     const KEY = 'v2_vote_';
 
     async function fetchDogData() {
@@ -114,14 +106,8 @@
     }
 
     async function renderDogs() {
-      const gallery = document.getElementById('dog-gallery');
-      // Show 12 skeletons
-      for (let i = 0; i < 12; i++) {
-        const skel = document.getElementById('skeleton-template').content.cloneNode(true);
-        gallery.appendChild(skel);
-      }
-
       const dogs = await fetchDogData();
+      const gallery = document.getElementById('dog-gallery');
       gallery.innerHTML = '';
 
       dogs.forEach(dog => {
@@ -131,8 +117,8 @@
         const card = document.createElement('div');
         card.className = 'dog-card';
         card.innerHTML = `
-          <div style="aspect-ratio: 1 / 1; overflow: hidden;">
-            <img class="w-full h-full object-contain" loading="lazy" src="${dog.image}" alt="${dog.name}">
+          <div class="w-full h-[300px] bg-gray-100 flex items-center justify-center overflow-hidden rounded-md">
+            <img loading="lazy" class="lazy-img w-full h-full object-contain" data-src="${dog.image}" alt="${dog.name}">
           </div>
           <div class="p-4">
             <div class="flex justify-between items-center mb-2">
@@ -149,24 +135,24 @@
 
         gallery.appendChild(card);
 
+        const img = card.querySelector('img');
+        img.src = img.getAttribute('data-src');
+        img.onload = () => img.classList.add('loaded');
+
         const voteBtn = card.querySelector('.vote-btn');
         const voteCount = card.querySelector('.vote-count');
 
         voteBtn.onclick = async () => {
           if (localStorage.getItem(votedKey)) return showTooltip(voteBtn, 'You already voted for this dog!');
-
           voteBtn.classList.add('voted');
           localStorage.setItem(votedKey, '1');
-
           voteCount.textContent = parseInt(voteCount.textContent) + 1;
-
-          await fetch(submitUrl, {
+          await fetch("https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec", {
             method: "POST",
             mode: "no-cors",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({id: dog.id})
           });
-
           showTooltip(voteBtn, 'Thanks for your vote!');
         };
 
