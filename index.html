@@ -1,19 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doggy Desserts - Monthly Competition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+    :root {
+      --primary: #54b8b2;
+      --secondary: #ab5896;
+      --accent: #c0d969;
+      --light: #f9f9f9;
+      --dark: #333333;
+    }
+    body { font-family: 'Nunito', sans-serif; background: var(--light); }
+    .dog-card { transition: all .3s ease; border:2px solid #f1f1f1; overflow:hidden; }
+    .dog-card:hover { transform: translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.1); }
+    .heart-btn { transition: all .2s ease; cursor:pointer; }
+    .heart-btn:hover:not(.voted) { transform: scale(1.1); }
+    .heart-btn.voted { color: var(--secondary); animation: heartBeat .3s ease-in-out; }
+    @keyframes heartBeat {0%{transform:scale(1)}25%{transform:scale(1.3)}50%{transform:scale(1)}75%{transform:scale(1.2)}100%{transform:scale(1)}}
+    .tooltip { position:absolute; background:rgba(0,0,0,.8); color:white; padding:5px 10px;
+               border-radius:4px; font-size:12px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:10; }
+    .tooltip.show { opacity:1; }
+    .lazy-img { filter: blur(10px); transition: filter 0.3s ease; }
+    .lazy-img.loaded { filter: blur(0); }
+    .skeleton {
+      background-color: #e0e0e0;
+      border-radius: 8px;
+      height: 320px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
   <div class="container mx-auto px-4 py-8 relative overflow-hidden">
     <div class="text-center mb-8 relative z-10">
-      <h1 class="text-4xl md:text-5xl font-bold text-[var(--primary)] mb-2">Doggy Desserts</h1>
-      <h2 class="text-2xl md:text-3xl font-semibold text-[var(--secondary)] mb-4">May Dog Photo Competition</h2>
+      <h1 class="text-4xl md:text-5xl font-bold text-[#54b8b2] mb-2">Doggy Desserts</h1>
+      <h2 class="text-2xl md:text-3xl font-semibold text-[#ab5896] mb-4">Monthly Dog Photo Competition</h2>
       <p class="text-lg text-gray-700 max-w-2xl mx-auto">
-        Vote for your favourite dog! One vote per person, per dog.
+        Vote for your favourite doggy! Each person can vote once per dog.
+      </p>
+      <p class="mt-2 text-sm text-red-600 font-semibold">
+        Voting has now closed for April – thank you to everyone who took part!
       </p>
     </div>
 
     <div class="flex justify-between items-center mb-6 relative z-10">
-      <div class="text-lg font-semibold text-[var(--secondary)]">
+      <div class="text-lg font-semibold text-[#ab5896]">
         <span id="total-entries">0</span> Entries
       </div>
       <div class="flex items-center">
         <label for="sort-select" class="mr-2 text-gray-700">Sort by:</label>
-        <select id="sort-select" class="bg-white border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-[var(--primary)]">
+        <select id="sort-select" class="bg-white border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-[#54b8b2]">
           <option value="name">Name (A–Z)</option>
           <option value="votes">Most Votes</option>
           <option value="newest">Newest First</option>
@@ -22,12 +67,13 @@
     </div>
 
     <div id="dog-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10">
-      <!-- dog cards will be injected here -->
+      <!-- cards injected here -->
     </div>
   </div>
 
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?gid=0&single=true&output=csv';
+    const sheetUrl =
+      'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?gid=0&single=true&output=csv';
     const KEY = 'v2_voted_';
 
     function showTooltip(el, msg) {
@@ -77,7 +123,7 @@
       gallery.innerHTML = '';
       dogs.forEach(d => {
         const card = document.createElement('div');
-        card.className = 'dog-card';
+        card.className = 'dog-card bg-white rounded-lg shadow-md relative';
         card.innerHTML = `
           <div class="overflow-hidden" style="aspect-ratio:1/1;">
             <img data-src="${d.image}" alt="${d.name}" class="w-full h-full object-contain lazy-img"/>
@@ -87,7 +133,7 @@
             <button class="share-btn text-gray-700 bg-gray-100 px-2 py-1 rounded-md">Share</button>
           </div>
           <div class="px-4 pb-4 flex items-center">
-            <button class="heart-btn text-2xl mr-2" title="Vote">🤍</button>
+            <button class="heart-btn text-2xl mr-2" title="Voting closed">🤍</button>
             <span class="vote-count font-semibold text-lg">${d.votes}</span>
             <span class="ml-1 text-gray-600">votes</span>
           </div>
@@ -95,29 +141,8 @@
         gallery.appendChild(card);
 
         const heart = card.querySelector('.heart-btn');
-        const voted = localStorage.getItem(KEY + d.id);
-        if (voted) {
-          heart.classList.add('voted');
-        }
         heart.onclick = () => {
-          if (localStorage.getItem(KEY + d.id)) {
-            showTooltip(heart, "You've already voted for this dog.");
-            return;
-          }
-
-          fetch('https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: d.id })
-          }).then(res => {
-            if (res.ok) {
-              localStorage.setItem(KEY + d.id, '1');
-              heart.classList.add('voted');
-              const countEl = card.querySelector('.vote-count');
-              countEl.innerText = +countEl.innerText + 1;
-              showTooltip(heart, 'Vote recorded!');
-            }
-          });
+          showTooltip(heart, "Thanks for voting! April's winner has already been chosen – voting is now closed.");
         };
 
         const share = card.querySelector('.share-btn');
