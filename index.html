@@ -1,166 +1,167 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Doggy Desserts Monthly Dog Photo Vote</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #fefcf8;
-      colour: #333;
-    }
+  <div class="container mx-auto px-4 py-8 relative overflow-hidden">
+    <div class="text-center mb-8 relative z-10">
+      <h1 class="text-4xl md:text-5xl font-bold text-[var(--primary)] mb-2">Doggy Desserts</h1>
+      <h2 class="text-2xl md:text-3xl font-semibold text-[var(--secondary)] mb-4">May Dog Photo Competition</h2>
+      <p class="text-lg text-gray-700 max-w-2xl mx-auto">
+        Vote for your favourite dog! One vote per person, per dog.
+      </p>
+    </div>
 
-    header {
-      background-color: #25b3ad;
-      colour: white;
-      padding: 2rem;
-      text-align: center;
-      font-weight: 600;
-      border-bottom: 5px solid #fff;
-    }
+    <div class="flex justify-between items-center mb-6 relative z-10">
+      <div class="text-lg font-semibold text-[var(--secondary)]">
+        <span id="total-entries">0</span> Entries
+      </div>
+      <div class="flex items-center">
+        <label for="sort-select" class="mr-2 text-gray-700">Sort by:</label>
+        <select id="sort-select" class="bg-white border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-[var(--primary)]">
+          <option value="name">Name (A–Z)</option>
+          <option value="votes">Most Votes</option>
+          <option value="newest">Newest First</option>
+        </select>
+      </div>
+    </div>
 
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 1rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .card {
-      background: #fffaf2;
-      border-radius: 1.5rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 1rem;
-      text-align: center;
-      transition: transform 0.2s;
-    }
-
-    .card img {
-      width: 100%;
-      height: auto;
-      border-radius: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .card h3 {
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
-    }
-
-    .votes {
-      font-size: 1rem;
-      margin: 0.5rem 0;
-    }
-
-    .btn {
-      background-color: #25b3ad;
-      colour: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 2rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn:hover {
-      background-color: #1e918d;
-    }
-
-    .voted {
-      background-color: #ccc;
-      cursor: default;
-    }
-
-    .message {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      colour: green;
-    }
-
-    @media (max-width: 500px) {
-      .container {
-        grid-template-columns: 1fr;
-        padding: 0.5rem;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <header>
-    <h1>Vote for Your Favourite Dog!</h1>
-    <p>Voting ends 7th June – one vote per dog, per person.</p>
-  </header>
-
-  <main class="container" id="dogContainer">
-    <!-- Cards inserted via JS -->
-  </main>
+    <div id="dog-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10">
+      <!-- dog cards will be injected here -->
+    </div>
+  </div>
 
   <script>
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=csv";
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec";
-    const votedDogs = JSON.parse(localStorage.getItem("votedDogs") || "[]");
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?gid=0&single=true&output=csv';
+    const KEY = 'v2_voted_';
 
-    fetch(sheetURL)
-      .then(res => res.text())
-      .then(data => {
-        const rows = data.trim().split("\n").slice(1);
-        const dogs = rows.map(row => {
-          const [id, name, votes, date, image] = row.split(",");
-          return { id, name, votes: parseInt(votes), date, image };
-        });
+    function showTooltip(el, msg) {
+      document.querySelectorAll('.tooltip').forEach(t => t.remove());
+      const tip = document.createElement('div');
+      tip.className = 'tooltip';
+      tip.innerText = msg;
+      const r = el.getBoundingClientRect();
+      tip.style.top  = (r.top - 30) + 'px';
+      tip.style.left = (r.left + r.width/2 - 80) + 'px';
+      document.body.appendChild(tip);
+      requestAnimationFrame(() => tip.classList.add('show'));
+      setTimeout(() => {
+        tip.classList.remove('show');
+        setTimeout(()=>tip.remove(), 300);
+      }, 2000);
+    }
 
-        dogs.sort((a, b) => a.name.localeCompare(b.name));
-        const container = document.getElementById("dogContainer");
+    function showSkeletons(count) {
+      const gallery = document.getElementById('dog-gallery');
+      gallery.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const skeletonCard = document.createElement('div');
+        skeletonCard.className = 'skeleton';
+        gallery.appendChild(skeletonCard);
+      }
+    }
 
-        dogs.forEach(dog => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <img src="${dog.image}" alt="${dog.name}">
-            <h3>${dog.name}</h3>
-            <p class="votes" id="votes-${dog.id}">${dog.votes} votes</p>
-            <button class="btn" id="vote-${dog.id}">Vote</button>
-            <div class="message" id="msg-${dog.id}"></div>
-          `;
-          container.appendChild(card);
+    async function fetchDogData() {
+      const res = await fetch(sheetUrl);
+      if (!res.ok) throw new Error('CSV load failed');
+      const text = await res.text();
+      return text.trim().split('\n').slice(1).map(r => {
+        let [id,name,votes,date,image] = r.split(',');
+        return {
+          id:     +id,
+          name:   name.trim(),
+          votes:  +votes,
+          date:   date.trim(),
+          image:  image.trim()
+        };
+      });
+    }
 
-          const voteBtn = document.getElementById(`vote-${dog.id}`);
-          const msg = document.getElementById(`msg-${dog.id}`);
+    function renderDogs(dogs) {
+      const gallery = document.getElementById('dog-gallery');
+      gallery.innerHTML = '';
+      dogs.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'dog-card';
+        card.innerHTML = `
+          <div class="overflow-hidden" style="aspect-ratio:1/1;">
+            <img data-src="${d.image}" alt="${d.name}" class="w-full h-full object-contain lazy-img"/>
+          </div>
+          <div class="p-4 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-800">${d.name}</h3>
+            <button class="share-btn text-gray-700 bg-gray-100 px-2 py-1 rounded-md">Share</button>
+          </div>
+          <div class="px-4 pb-4 flex items-center">
+            <button class="heart-btn text-2xl mr-2" title="Vote">🤍</button>
+            <span class="vote-count font-semibold text-lg">${d.votes}</span>
+            <span class="ml-1 text-gray-600">votes</span>
+          </div>
+        `;
+        gallery.appendChild(card);
 
-          if (votedDogs.includes(dog.id)) {
-            voteBtn.classList.add("voted");
-            voteBtn.innerText = "Voted";
-            voteBtn.disabled = true;
-          } else {
-            voteBtn.addEventListener("click", () => {
-              fetch(scriptURL, {
-                method: "POST",
-                body: new URLSearchParams({ id: dog.id })
-              })
-              .then(() => {
-                votedDogs.push(dog.id);
-                localStorage.setItem("votedDogs", JSON.stringify(votedDogs));
-                voteBtn.classList.add("voted");
-                voteBtn.innerText = "Voted";
-                voteBtn.disabled = true;
-                const voteEl = document.getElementById(`votes-${dog.id}`);
-                voteEl.innerText = `${dog.votes + 1} votes`;
-                msg.innerText = "Thanks for voting!";
-              })
-              .catch(err => {
-                msg.innerText = "Error. Try again.";
-              });
-            });
+        const heart = card.querySelector('.heart-btn');
+        const voted = localStorage.getItem(KEY + d.id);
+        if (voted) {
+          heart.classList.add('voted');
+        }
+        heart.onclick = () => {
+          if (localStorage.getItem(KEY + d.id)) {
+            showTooltip(heart, "You've already voted for this dog.");
+            return;
+          }
+
+          fetch('https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: d.id })
+          }).then(res => {
+            if (res.ok) {
+              localStorage.setItem(KEY + d.id, '1');
+              heart.classList.add('voted');
+              const countEl = card.querySelector('.vote-count');
+              countEl.innerText = +countEl.innerText + 1;
+              showTooltip(heart, 'Vote recorded!');
+            }
+          });
+        };
+
+        const share = card.querySelector('.share-btn');
+        share.onclick = () => {
+          const url = `${location.origin}${location.pathname}?dog=${d.id}`;
+          navigator.clipboard.writeText(url);
+          showTooltip(share, 'Link copied!');
+        };
+      });
+
+      const lazyImgs = document.querySelectorAll('img.lazy-img');
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            img.src = img.getAttribute('data-src');
+            img.onload = () => img.classList.add('loaded');
+            io.unobserve(img);
           }
         });
       });
+      lazyImgs.forEach(img => io.observe(img));
+    }
+
+    function sortDogs(arr, by) {
+      if (by === 'name')   arr.sort((a,b)=>a.name.localeCompare(b.name));
+      if (by === 'votes')  arr.sort((a,b)=>b.votes - a.votes);
+      if (by === 'newest') arr.sort((a,b)=>new Date(b.date) - new Date(a.date));
+    }
+
+    async function initialize() {
+      showSkeletons(8);
+      const dogs = await fetchDogData();
+      document.getElementById('total-entries').textContent = dogs.length;
+      const sel = document.getElementById('sort-select');
+      sel.onchange = () => {
+        sortDogs(dogs, sel.value);
+        renderDogs(dogs);
+      };
+      sortDogs(dogs, sel.value);
+      renderDogs(dogs);
+    }
+
+    document.addEventListener('DOMContentLoaded', initialize);
   </script>
 </body>
 </html>
