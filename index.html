@@ -78,16 +78,36 @@
   </div>
 
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?gid=0&single=true&output=csv';
-    const KEY = 'v2_vote_';
+    const KEY = 'v3_vote_';
 
     async function fetchDogData() {
-      const res = await fetch(sheetUrl);
-      const text = await res.text();
-      return text.trim().split('\n').slice(1).map(row => {
-        const [id, name, votes, date, image] = row.split(',');
-        return { id, name: name.trim(), votes: +votes, date, image: image.trim() };
-      });
+      return [
+        {"id":1,"name":"Archie","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_e0c99f7c43cd4923b9912c565f29f6cd~mv2.jpeg"},
+        {"id":2,"name":"Arnold","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_f3035229799b475a9707545a1175ebe1~mv2.jpeg"},
+        {"id":3,"name":"Bambi","votes":2,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_8c170340829548c693f1d36b4b8a6338~mv2.jpeg"},
+        {"id":4,"name":"Barney","votes":1,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_97302b38993f41eaa0fa2bcef45e79f5~mv2.jpg"},
+        {"id":5,"name":"Bella","votes":1,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_f6d04adcf918421ea520c4c6970ac079~mv2.jpg"},
+        {"id":6,"name":"Belle","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_2e131f4420bd4aa98c009c39456fb514~mv2.jpg"},
+        {"id":7,"name":"Buddy","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_539a7eb7e4504574b076564f1517a9d0~mv2.jpg"},
+        {"id":8,"name":"Coco","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_e55dd86266d440a483adfc746293df6b~mv2.jpg"},
+        {"id":9,"name":"Cora & Milo","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_8437701fa98b4683b8800be214375358~mv2.jpeg"},
+        {"id":10,"name":"Dolly","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_b501a7bf8b0e468a909b3fa220e41fb7~mv2.jpeg"},
+        {"id":11,"name":"Finley","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_8d23d7d521b348dea0a972ea804b88cf~mv2.jpg"},
+        {"id":12,"name":"Juno","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_3d4c8e63d8944fb295036081296aaa0b~mv2.jpeg"},
+        {"id":13,"name":"Lola","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_221d427194b34ab5b5d3cfea5aed0177~mv2.jpeg"},
+        {"id":14,"name":"Louie","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_c3288c03cf0847b79be6ffe9756d9868~mv2.jpeg"},
+        {"id":15,"name":"Mochi","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_cbcab0da97be43a988dca3592759a011~mv2.jpeg"},
+        {"id":16,"name":"Molly","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_d0b87ae5448c4c28b7837fdf4bb72c5c~mv2.jpeg"},
+        {"id":17,"name":"Nora","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_d250da4601fb4e54ac2fbe5d10257964~mv2.jpeg"},
+        {"id":18,"name":"Ollie","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_34c9f51745984afe848eea8d3400fff4~mv2.png"},
+        {"id":19,"name":"Oscar","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_4e7ad60fb2cb41c28088655cc3584936~mv2.jpeg"},
+        {"id":20,"name":"Pablo","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_58c5bfd643b84caeb880ea5f740ac62b~mv2.jpeg"},
+        {"id":21,"name":"Reggie","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_5481b6c267404f65a1f4988c86019d10~mv2.jpg"},
+        {"id":22,"name":"Rocco","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_494f17ca1c474c9bbe846576da239b42~mv2.jpeg"},
+        {"id":23,"name":"Rosie","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_93b8fe3b0e4446d483ff0f185ff9668f~mv2.jpeg"},
+        {"id":24,"name":"Saxon","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_52bc3c04887b4cda82702c8d7ee390cb~mv2.jpg"},
+        {"id":25,"name":"Shadow","votes":0,"date":"2025-06-03","image":"https://static.wixstatic.com/media/3342f4_064146b7d3ff4c51bf27d900bc9a6bfe~mv2.jpg"}
+      ];
     }
 
     function showTooltip(el, msg) {
@@ -117,8 +137,8 @@
         const card = document.createElement('div');
         card.className = 'dog-card';
         card.innerHTML = `
-          <div class="w-full h-[300px] bg-gray-100 flex items-center justify-center overflow-hidden rounded-md">
-            <img loading="lazy" class="lazy-img w-full h-full object-contain" data-src="${dog.image}" alt="${dog.name}">
+          <div style="aspect-ratio: 1 / 1; overflow: hidden;">
+            <img class="lazy-img w-full h-full object-contain" data-src="${dog.image}" alt="${dog.name}">
           </div>
           <div class="p-4">
             <div class="flex justify-between items-center mb-2">
@@ -144,15 +164,18 @@
 
         voteBtn.onclick = async () => {
           if (localStorage.getItem(votedKey)) return showTooltip(voteBtn, 'You already voted for this dog!');
+
           voteBtn.classList.add('voted');
           localStorage.setItem(votedKey, '1');
           voteCount.textContent = parseInt(voteCount.textContent) + 1;
+
           await fetch("https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec", {
             method: "POST",
             mode: "no-cors",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({id: dog.id})
           });
+
           showTooltip(voteBtn, 'Thanks for your vote!');
         };
 
