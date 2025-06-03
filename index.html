@@ -2,68 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Doggy Desserts Voting</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <title>Doggy Desserts Monthly Dog Photo Comp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
   <style>
-    html {
-      scroll-behavior: smooth;
-      font-family: 'Poppins', sans-serif;
-    }
     body {
       margin: 0;
-      background: #fdfaf6;
+      font-family: 'Poppins', sans-serif;
+      background: #fdfaf5;
+      padding: 20px;
     }
     header {
       background: #25b3ad;
-      colour: white;
-      padding: 2rem;
-      text-align: centre;
-      font-size: 1.8rem;
-      font-weight: 600;
+      padding: 20px;
+      text-align: center;
+      color: white;
+      border-radius: 12px;
+      margin-bottom: 20px;
     }
     .container {
-      background: #fffdf9;
-      margin: 2rem auto;
-      padding: 1.5rem;
-      border-radius: 20px;
+      background: #fff9ec;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       max-width: 900px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin: auto;
+    }
+    .dog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
     }
     .dog-card {
-      margin: 1.2rem 0;
-      padding: 1rem;
-      border-radius: 16px;
       background: #ffffff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      display: flex;
-      align-items: centre;
-      gap: 1rem;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .dog-card:hover {
+      transform: scale(1.02);
     }
     .dog-card img {
-      max-width: 100px;
-      height: auto;
+      width: 100%;
       border-radius: 12px;
     }
     .dog-name {
-      font-size: 1.2rem;
-      font-weight: 600;
+      font-weight: bold;
+      margin: 10px 0 5px;
+      font-size: 18px;
+    }
+    .vote-count {
+      font-size: 14px;
+      colour: #333;
     }
     .vote-btn {
-      margin-left: auto;
+      margin-top: 10px;
       background: #25b3ad;
       colour: white;
       border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 30px;
+      border-radius: 8px;
+      padding: 8px 16px;
       cursor: pointer;
-      transition: transform 0.2s;
+      font-size: 14px;
+      transition: background 0.3s;
     }
     .vote-btn:hover {
-      transform: scale(1.05);
+      background: #1e9a96;
+    }
+    .share-link {
+      margin-top: 6px;
+      font-size: 12px;
+      background: #eee;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      display: inline-block;
     }
     .highlight {
-      animation: pulse 1s ease-out;
+      animation: pulse 1.5s ease-out;
     }
     @keyframes pulse {
       0% { box-shadow: 0 0 0px #25b3ad; }
@@ -73,85 +93,81 @@
   </style>
 </head>
 <body>
+
   <header>
-    Doggy Desserts Monthly Dog Photo Competition<br>
-    <span style="font-size:1rem; font-weight:400;">Voting is open until 7th June – cast your votes below!</span>
+    <h1>This Month’s Dog Photo Competition</h1>
+    <p>Voting closes at midnight on 7 June — vote now!</p>
   </header>
 
-  <div class="container" id="vote-container">
-    <!-- Dog cards will load here -->
+  <div class="container">
+    <div class="dog-grid" id="dogGrid">
+      <!-- Dog cards will be injected here -->
+    </div>
   </div>
 
   <script>
-    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=csv';
-    const submitURL = 'https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec';
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=tsv";
+    const voteURL = "https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec";
 
     const voted = JSON.parse(localStorage.getItem("votedDogs") || "[]");
 
-    function createCard(name, image, votes) {
-      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      const card = document.createElement("div");
-      card.className = "dog-card";
-      card.id = id;
-
-      const img = document.createElement("img");
-      img.src = image;
-      img.alt = name;
-
-      const title = document.createElement("div");
-      title.className = "dog-name";
-      title.textContent = name;
-
-      const voteBtn = document.createElement("button");
-      voteBtn.className = "vote-btn";
-      voteBtn.textContent = voted.includes(name) ? "✓ Voted" : "Vote";
-
-      if (!voted.includes(name)) {
-        voteBtn.onclick = () => {
-          fetch(submitURL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name })
-          }).then(res => {
-            if (res.ok) {
-              voted.push(name);
-              localStorage.setItem("votedDogs", JSON.stringify(voted));
-              voteBtn.textContent = "✓ Voted";
-              voteBtn.disabled = true;
-            }
-          });
-        };
-      } else {
-        voteBtn.disabled = true;
-      }
-
-      card.appendChild(img);
-      card.appendChild(title);
-      card.appendChild(voteBtn);
-      return card;
-    }
-
     fetch(sheetURL)
       .then(res => res.text())
-      .then(text => {
-        const rows = text.trim().split("\n").slice(1);
-        const container = document.getElementById("vote-container");
+      .then(data => {
+        const rows = data.trim().split("\n").slice(1);
+        const dogGrid = document.getElementById("dogGrid");
+
         rows.forEach(row => {
-          const [id, name, , , image] = row.split(",");
-          container.appendChild(createCard(name.trim(), image.trim()));
+          const [id, name, votes, date, image] = row.split("\t");
+          const cleanId = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+          const card = document.createElement("div");
+          card.className = "dog-card";
+          card.id = cleanId;
+
+          card.innerHTML = `
+            <img src="${image}" alt="${name}" />
+            <div class="dog-name">${name}</div>
+            <div class="vote-count">${votes} vote${votes == 1 ? "" : "s"}</div>
+            <button class="vote-btn" ${voted.includes(name) ? "disabled" : ""}>${voted.includes(name) ? "Voted" : "Vote"}</button>
+            <div class="share-link" onclick="copyShareLink('${cleanId}', this)">Copy share link</div>
+          `;
+
+          card.querySelector(".vote-btn").addEventListener("click", () => {
+            fetch(`${voteURL}?name=${encodeURIComponent(name)}`)
+              .then(() => {
+                voted.push(name);
+                localStorage.setItem("votedDogs", JSON.stringify(voted));
+                card.querySelector(".vote-btn").innerText = "Voted";
+                card.querySelector(".vote-btn").disabled = true;
+
+                const count = card.querySelector(".vote-count");
+                const currentVotes = parseInt(count.innerText);
+                count.innerText = `${currentVotes + 1} vote${currentVotes + 1 === 1 ? "" : "s"}`;
+              });
+          });
+
+          dogGrid.appendChild(card);
         });
 
-        // Scroll to dog if hash exists
-        const hash = window.location.hash;
+        // Scroll to dog if hash in URL
+        const hash = window.location.hash.substring(1);
         if (hash) {
-          const target = document.querySelector(hash);
+          const target = document.getElementById(hash);
           if (target) {
-            target.scrollIntoView({ behavior: "smooth", block: "center" });
+            target.scrollIntoView({ behaviour: "smooth", block: "center" });
             target.classList.add("highlight");
-            setTimeout(() => target.classList.remove("highlight"), 1500);
           }
         }
       });
+
+    function copyShareLink(dogId, element) {
+      const url = `${window.location.origin}${window.location.pathname}#${dogId}`;
+      navigator.clipboard.writeText(url).then(() => {
+        element.innerText = "Link copied!";
+        setTimeout(() => element.innerText = "Copy share link", 2000);
+      });
+    }
   </script>
 </body>
 </html>
