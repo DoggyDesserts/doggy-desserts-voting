@@ -2,172 +2,196 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Doggy Desserts Monthly Dog Photo Comp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  <title>Doggy Desserts Voting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      margin: 0;
       font-family: 'Poppins', sans-serif;
       background: #fdfaf5;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
+      color: #333;
     }
-    header {
+    .header {
       background: #25b3ad;
-      padding: 20px;
+      colour: white;
       text-align: center;
-      color: white;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      padding: 1.5rem;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      colour: white;
+    }
+    .header p {
+      margin-top: 0.5rem;
+      colour: white;
     }
     .container {
-      background: #fff9ec;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 900px;
-      margin: auto;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
     }
-    .dog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-    .dog-card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 1rem;
+      width: 250px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
       transition: transform 0.2s;
-      position: relative;
     }
-    .dog-card:hover {
+    .card:hover {
       transform: scale(1.02);
     }
-    .dog-card img {
+    .card img {
       width: 100%;
-      border-radius: 12px;
+      height: auto;
+      border-radius: 16px;
+      margin-bottom: 0.75rem;
     }
-    .dog-name {
-      font-weight: bold;
-      margin: 10px 0 5px;
-      font-size: 18px;
+    .card h3 {
+      margin: 0.5rem 0;
     }
     .vote-count {
-      font-size: 14px;
-      colour: #333;
+      margin: 0.25rem 0;
+      font-size: 0.9rem;
+      colour: #666;
     }
-    .vote-btn {
-      margin-top: 10px;
+    .vote-button {
       background: #25b3ad;
       colour: white;
       border: none;
-      border-radius: 8px;
-      padding: 8px 16px;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
       cursor: pointer;
-      font-size: 14px;
-      transition: background 0.3s;
+      font-weight: 600;
+      margin-top: 0.5rem;
     }
-    .vote-btn:hover {
-      background: #1e9a96;
+    .vote-button:hover {
+      opacity: 0.9;
     }
     .share-link {
-      margin-top: 6px;
-      font-size: 12px;
-      background: #eee;
-      border-radius: 6px;
-      padding: 4px 8px;
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
       cursor: pointer;
-      display: inline-block;
+      colour: #25b3ad;
+      text-decoration: underline;
     }
-    .highlight {
-      animation: pulse 1.5s ease-out;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0px #25b3ad; }
-      50% { box-shadow: 0 0 20px #25b3ad; }
-      100% { box-shadow: 0 0 0px #25b3ad; }
+    .toast {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #25b3ad;
+      colour: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>This Month’s Dog Photo Competition</h1>
-    <p>Voting closes at midnight on 7 June — vote now!</p>
-  </header>
-
-  <div class="container">
-    <div class="dog-grid" id="dogGrid">
-      <!-- Dog cards will be injected here -->
-    </div>
+  <div class="header">
+    <h1>This Month's Dog Photo Competition</h1>
+    <p>Voting closes Sunday 9th June at midnight!</p>
   </div>
 
-  <script>
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=tsv";
-    const voteURL = "https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec";
+  <div class="container" id="dogContainer"></div>
 
-    const voted = JSON.parse(localStorage.getItem("votedDogs") || "[]");
+  <div class="toast" id="toast">Thanks for voting!</div>
+
+  <script>
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6MBX0N8yqU5Jz5H4W3G5EnYuBJm7XKy3YLXvWVtxXQLploHlcU-3VuHjjfjboZC2nzuelzieNuLSH/pub?output=tsv';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzXjE7HeeWUshnrBxJCHDdgeiO29ovYJLUfH7bSr-bldkc95cskvCAlszKEQEwTju2T/exec';
+    const votedDogs = JSON.parse(localStorage.getItem('votedDogs') || '[]');
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 2000);
+    }
 
     fetch(sheetURL)
       .then(res => res.text())
-      .then(data => {
-        const rows = data.trim().split("\n").slice(1);
-        const dogGrid = document.getElementById("dogGrid");
-
-        rows.forEach(row => {
-          const [id, name, votes, date, image] = row.split("\t");
-          const cleanId = name.toLowerCase().replace(/[^a-z0-9]/g, "");
-
-          const card = document.createElement("div");
-          card.className = "dog-card";
-          card.id = cleanId;
+      .then(text => {
+        const rows = text.trim().split('\n').map(row => row.split('\t'));
+        const [header, ...data] = rows;
+        const container = document.getElementById('dogContainer');
+        data.forEach(([id, name, votes, , imageUrl]) => {
+          const lowerName = name.toLowerCase().replace(/\s+/g, '-');
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.id = lowerName;
 
           card.innerHTML = `
-            <img src="${image}" alt="${name}" />
-            <div class="dog-name">${name}</div>
-            <div class="vote-count">${votes} vote${votes == 1 ? "" : "s"}</div>
-            <button class="vote-btn" ${voted.includes(name) ? "disabled" : ""}>${voted.includes(name) ? "Voted" : "Vote"}</button>
-            <div class="share-link" onclick="copyShareLink('${cleanId}', this)">Copy share link</div>
+            <img src="${imageUrl}" alt="${name}" />
+            <h3>${name}</h3>
+            <p class="vote-count" id="count-${lowerName}">${votes} vote${votes !== '1' ? 's' : ''}</p>
+            <button class="vote-button" data-id="${id}" data-name="${name}" ${votedDogs.includes(id) ? 'disabled' : ''}>${votedDogs.includes(id) ? 'Voted!' : 'Vote'}</button>
+            <div class="share-link" onclick="copyLink('${lowerName}')">Copy Share Link</div>
           `;
-
-          card.querySelector(".vote-btn").addEventListener("click", () => {
-            fetch(`${voteURL}?name=${encodeURIComponent(name)}`)
-              .then(() => {
-                voted.push(name);
-                localStorage.setItem("votedDogs", JSON.stringify(voted));
-                card.querySelector(".vote-btn").innerText = "Voted";
-                card.querySelector(".vote-btn").disabled = true;
-
-                const count = card.querySelector(".vote-count");
-                const currentVotes = parseInt(count.innerText);
-                count.innerText = `${currentVotes + 1} vote${currentVotes + 1 === 1 ? "" : "s"}`;
-              });
-          });
-
-          dogGrid.appendChild(card);
+          container.appendChild(card);
         });
 
-        // Scroll to dog if hash in URL
-        const hash = window.location.hash.substring(1);
-        if (hash) {
-          const target = document.getElementById(hash);
-          if (target) {
-            target.scrollIntoView({ behaviour: "smooth", block: "center" });
-            target.classList.add("highlight");
-          }
-        }
+        document.querySelectorAll('.vote-button').forEach(button => {
+          button.addEventListener('click', () => {
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            if (votedDogs.includes(id)) return;
+
+            fetch(scriptURL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id, name })
+            })
+            .then(res => res.json())
+            .then(() => {
+              votedDogs.push(id);
+              localStorage.setItem('votedDogs', JSON.stringify(votedDogs));
+              button.disabled = true;
+              button.textContent = 'Voted!';
+              const countEl = document.getElementById(`count-${name.toLowerCase().replace(/\s+/g, '-')}`);
+              let current = parseInt(countEl.textContent) || 0;
+              countEl.textContent = `${current + 1} votes`;
+              showToast('Thanks for voting!');
+            });
+          });
+        });
       });
 
-    function copyShareLink(dogId, element) {
-      const url = `${window.location.origin}${window.location.pathname}#${dogId}`;
-      navigator.clipboard.writeText(url).then(() => {
-        element.innerText = "Link copied!";
-        setTimeout(() => element.innerText = "Copy share link", 2000);
-      });
+    function copyLink(id) {
+      const link = `${window.location.href.split('#')[0]}#${id}`;
+      navigator.clipboard.writeText(link).then(() => showToast('Link copied!'));
     }
+
+    // Scroll to dog if hash present
+    window.addEventListener('load', () => {
+      const targetId = window.location.hash.slice(1);
+      if (targetId) {
+        const target = document.getElementById(targetId);
+        if (target) {
+          setTimeout(() => {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.style.boxShadow = '0 0 0 5px #25b3ad33';
+            setTimeout(() => target.style.boxShadow = '', 3000);
+          }, 300);
+        }
+      }
+    });
   </script>
+
 </body>
 </html>
