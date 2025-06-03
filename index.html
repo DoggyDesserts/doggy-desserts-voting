@@ -153,9 +153,15 @@
 
           await fetch(submitUrl, {
             method: "POST",
-            mode: "no-cors",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({id: dog.id})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: dog.id })
+          })
+          .then(res => res.text())
+          .then(data => {
+            console.log('Vote response:', data);
+          })
+          .catch(err => {
+            console.error('Vote error:', err);
           });
 
           showTooltip(voteBtn, 'Thanks for your vote!');
