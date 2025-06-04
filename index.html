@@ -77,7 +77,7 @@
   </div>
 
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdPpLhFySlOwKspB91rV4qFDMOOcE5nRuFUNhtip1SaJYopsOacuNlsR1WhAR4x6IYCw3fJWaFonjX/pub?output=csv';
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdPpLhFySI0wKspB91rV4qFDM0OcE5nRuFUNhtip1SaJYopsOacuNIsR1WhAR4x6IYCw3fJWaFonjX/pub?output=csv';
     const submitUrl = 'https://script.google.com/macros/s/AKfycbzCaD5TG6HwuarF1cUwPepNnm8ZDX_dVegZZ-7cBWxcPJZtncnO0enOPyEJNSddBC2Olg/exec';
     const KEY = 'v3_vote_';
 
@@ -95,13 +95,13 @@
       tip.className = 'tooltip';
       tip.innerText = msg;
       const r = el.getBoundingClientRect();
-      tip.style.top = (r.top - 30) + 'px';
-      tip.style.left = (r.left + r.width / 2 - 80) + 'px';
+      tip.style.top  = (r.top - 30) + 'px';
+      tip.style.left = (r.left + r.width/2 - 80) + 'px';
       document.body.appendChild(tip);
       requestAnimationFrame(() => tip.classList.add('show'));
       setTimeout(() => {
         tip.classList.remove('show');
-        setTimeout(() => tip.remove(), 300);
+        setTimeout(()=>tip.remove(), 300);
       }, 2000);
     }
 
@@ -156,9 +156,9 @@
               body: JSON.stringify({ id: dog.id })
             });
             const txt = await res.text();
-            console.log('Vote success:', txt);
+            console.log('Vote response:', txt);
           } catch (err) {
-            console.error('Vote failed:', err);
+            console.error('Vote error:', err);
             showTooltip(voteBtn, 'Something went wrong!');
           }
 
