@@ -33,7 +33,6 @@
 </head>
 <body>
   <div class="container mx-auto px-4 py-8 relative overflow-hidden">
-    <!-- paw prints -->
     <div class="paw-print text-6xl top-10 left-10">🐾</div>
     <div class="paw-print text-8xl bottom-20 right-10">🐾</div>
     <div class="paw-print text-5xl top-40 right-40">🐾</div>
@@ -62,16 +61,19 @@
     </div>
 
     <div id="dog-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10">
-      <!-- cards injected here -->
+      <!-- dog cards go here -->
     </div>
   </div>
 
   <script>
-    // CONFIG
+    // ✅ Your correct Google Sheet CSV URL
     const sheetUrl =
-      'https://docs.google.com/spreadsheets/d/e/2PACX-1vRgEXC-nKUnHj5qMJUCk9TXBP2YAKsfn0HUGIUlxHHUoIwbA3R04nCfjUvP9IzE34A0ahPVZkzMLa-a/pub?gid=0&single=true&output=csv';
+      'https://docs.google.com/spreadsheets/d/e/2PACX-1vTN4VhMGb8v8A2ZjTjMMnSWCcgaSUJrPm6D1keFCw8zLv8mvV_l_gwepmT_tbCbJYLErvv4-7qT4uZb/pub?output=csv';
+
+    // ✅ Your live deployed Google Apps Script Web App
     const voteEndpoint =
       'https://script.google.com/macros/s/AKfycbxqGfWqk8edwCkef-qy7JAyGQYhVz6ovNB762CKFTqwTp5OplLQUk_G7yRQk6sJ4Xaw/exec';
+
     const KEY = 'v2_voted_';
 
     function createHeartAnimation(x, y) {
@@ -79,7 +81,7 @@
       h.innerText = '❤️';
       h.className = 'heart-animation text-2xl';
       h.style.left = x + 'px';
-      h.style.top  = y + 'px';
+      h.style.top = y + 'px';
       document.body.appendChild(h);
       setTimeout(() => h.remove(), 1000);
     }
@@ -90,13 +92,13 @@
       tip.className = 'tooltip';
       tip.innerText = msg;
       const r = el.getBoundingClientRect();
-      tip.style.top  = (r.top - 30) + 'px';
-      tip.style.left = (r.left + r.width/2 - 40) + 'px';
+      tip.style.top = (r.top - 30) + 'px';
+      tip.style.left = (r.left + r.width / 2 - 40) + 'px';
       document.body.appendChild(tip);
       requestAnimationFrame(() => tip.classList.add('show'));
       setTimeout(() => {
         tip.classList.remove('show');
-        setTimeout(()=>tip.remove(), 300);
+        setTimeout(() => tip.remove(), 300);
       }, 2000);
     }
 
@@ -117,13 +119,13 @@
       if (!res.ok) throw new Error('CSV load failed');
       const text = await res.text();
       return text.trim().split('\n').slice(1).map(r => {
-        let [id,name,votes,date,image] = r.split(',');
+        let [id, name, votes, date, image] = r.split(',');
         return {
-          id:     +id,
-          name:   name.trim(),
-          votes:  +votes,
-          date:   date.trim(),
-          image:  image.trim()
+          id: +id,
+          name: name.trim(),
+          votes: +votes,
+          date: date.trim(),
+          image: image.trim()
         };
       });
     }
@@ -164,10 +166,10 @@
           d.votes++;
           count.textContent = d.votes;
           count.classList.add('bump');
-          setTimeout(()=>count.classList.remove('bump'), 300);
+          setTimeout(() => count.classList.remove('bump'), 300);
 
           const r = heart.getBoundingClientRect();
-          createHeartAnimation(r.left + r.width/2, r.top + r.height/2);
+          createHeartAnimation(r.left + r.width / 2, r.top + r.height / 2);
           postVote(d.id).catch(console.error);
         };
 
@@ -181,9 +183,9 @@
     }
 
     function sortDogs(arr, by) {
-      if (by === 'name')   arr.sort((a,b)=>a.name.localeCompare(b.name));
-      if (by === 'votes')  arr.sort((a,b)=>b.votes - a.votes);
-      if (by === 'newest') arr.sort((a,b)=>new Date(b.date) - new Date(a.date));
+      if (by === 'name') arr.sort((a, b) => a.name.localeCompare(b.name));
+      if (by === 'votes') arr.sort((a, b) => b.votes - a.votes);
+      if (by === 'newest') arr.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
     async function initialize() {
