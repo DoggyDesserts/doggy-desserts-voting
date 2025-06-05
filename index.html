@@ -33,7 +33,6 @@
 </head>
 <body>
   <div class="container mx-auto px-4 py-8 relative overflow-hidden">
-    <!-- paw prints -->
     <div class="paw-print text-6xl top-10 left-10">🐾</div>
     <div class="paw-print text-8xl bottom-20 right-10">🐾</div>
     <div class="paw-print text-5xl top-40 right-40">🐾</div>
@@ -62,7 +61,7 @@
     </div>
 
     <div id="dog-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10">
-      <!-- dog cards will be inserted here -->
+      <!-- Cards go here -->
     </div>
   </div>
 
@@ -76,7 +75,7 @@
       h.innerText = '❤️';
       h.className = 'heart-animation text-2xl';
       h.style.left = x + 'px';
-      h.style.top  = y + 'px';
+      h.style.top = y + 'px';
       document.body.appendChild(h);
       setTimeout(() => h.remove(), 1000);
     }
@@ -87,13 +86,13 @@
       tip.className = 'tooltip';
       tip.innerText = msg;
       const r = el.getBoundingClientRect();
-      tip.style.top  = (r.top - 30) + 'px';
-      tip.style.left = (r.left + r.width/2 - 40) + 'px';
+      tip.style.top = (r.top - 30) + 'px';
+      tip.style.left = (r.left + r.width / 2 - 40) + 'px';
       document.body.appendChild(tip);
       requestAnimationFrame(() => tip.classList.add('show'));
       setTimeout(() => {
         tip.classList.remove('show');
-        setTimeout(()=>tip.remove(), 300);
+        setTimeout(() => tip.remove(), 300);
       }, 2000);
     }
 
@@ -141,8 +140,8 @@
             <button class="share-btn text-gray-700 bg-gray-100 px-2 py-1 rounded-md">Share</button>
           </div>
           <div class="px-4 pb-4 flex items-center">
-            <button class="heart-btn text-2xl mr-2 ${voted?'voted':''}" ${voted?'disabled':''}>
-              ${voted?'❤️':'🤍'}
+            <button class="heart-btn text-2xl mr-2 ${voted ? 'voted' : ''}" ${voted ? 'disabled' : ''}>
+              ${voted ? '❤️' : '🤍'}
             </button>
             <span class="vote-count font-semibold text-lg">${d.votes}</span>
             <span class="ml-1 text-gray-600">votes</span>
@@ -157,12 +156,14 @@
           heart.innerText = '❤️';
           heart.classList.add('voted');
           heart.disabled = true;
+
           d.votes++;
           count.textContent = d.votes;
           count.classList.add('bump');
           setTimeout(() => count.classList.remove('bump'), 300);
+
           const r = heart.getBoundingClientRect();
-          createHeartAnimation(r.left + r.width/2, r.top + r.height/2);
+          createHeartAnimation(r.left + r.width / 2, r.top + r.height / 2);
           postVote(d.id).catch(console.error);
         };
 
@@ -176,9 +177,9 @@
     }
 
     function sortDogs(arr, by) {
-      if (by === 'name')   arr.sort((a,b)=>a.name.localeCompare(b.name));
-      if (by === 'votes')  arr.sort((a,b)=>b.votes - a.votes);
-      if (by === 'newest') arr.sort((a,b)=>new Date(b.date) - new Date(a.date));
+      if (by === 'name') arr.sort((a, b) => a.name.localeCompare(b.name));
+      if (by === 'votes') arr.sort((a, b) => b.votes - a.votes);
+      if (by === 'newest') arr.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
     async function initialize() {
