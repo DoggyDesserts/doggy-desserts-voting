@@ -104,6 +104,7 @@
     async function postVote(id) {
       await fetch(voteEndpoint, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
       });
       localStorage.setItem(KEY + id, 'true');
